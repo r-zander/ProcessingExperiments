@@ -1,4 +1,4 @@
-package seminar05;
+package timevisualization;
 
 import processing.core.PApplet;
 import processing.core.PFont;

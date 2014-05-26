@@ -1,4 +1,4 @@
-package seminar05;
+package timevisualization;
 
 import java.util.HashMap;
 import java.util.Map;
