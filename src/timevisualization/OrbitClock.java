@@ -1,8 +1,7 @@
 package timevisualization;
 
+import static util.Numbers.SQRT_2;
 import processing.core.PApplet;
-import util.Axis;
-import util.Colors;
 
 public class OrbitClock extends PApplet {
 
@@ -10,69 +9,89 @@ public class OrbitClock extends PApplet {
 
     private static final int  STEPS            = 120;
 
-    int                       currentStep      = 0;
+    private float             a;
 
-    float                     a;
+    private float             centerX;
 
-    float                     angle;
-
-    static final float        SQRT_2           = sqrt(2);
-
-    float                     centerX;
-
-    float                     centerY;
-
-    float                     lastX;
-
-    float                     lastY;
+    private float             centerY;
 
     @Override
     public void setup() {
         size(displayWidth, displayHeight);
         background(192);
-        Colors.drawGradient(this, 0, 0, width, height, color(255, 192, 0), color(0, 0, 192), Axis.X_AXIS);
+//        Colors.drawGradient(this, 0, 0, width, height, color(255, 192, 0), color(0, 0, 192), Axis.X_AXIS);
 
-        a = width * .35f;
+        a = width * .30f;
         centerX = width / 2;
         centerY = height / 2;
-
-        angle = time2angle(hour(), minute());
-        float sin = sin(angle);
-        float divisor = sq(sin) + 1;
-        float dividend = a * SQRT_2 * cos(angle);
-        lastX = centerX + dividend / divisor;
-        lastY = centerY + (dividend * sin) / divisor;
-        fill(0);
-        noStroke();
-        ellipse(lastX, lastY, 40, 40);
-//        println("(" + width + "/" + height + ")");
-//        println("(" + lastX + "/" + lastY + ")");
-//        println("(" + lastX / width + "/" + lastY / height + ")");
 
     }
 
     @Override
     public void draw() {
-//        fill(192, 10);
-//        rect(0, 0, width, height);
+        float angle = hour2angle(hour(), minute());
+        background(192);
+//        Colors.drawGradient(this, 0, 0, width, height, color(255, 192, 0), color(0, 0, 192), Axis.X_AXIS);
+        float lastX = -1;
+        float lastY = -1;
+        for (int currentStep = 0; currentStep < STEPS; currentStep++) {
+            float sin = sin(angle);
+            float divisor = sq(sin) + 1;
+            float dividend = a * SQRT_2 * cos(angle);
+            float x = centerX + dividend / divisor;
+            float y = centerY + (dividend * sin) / divisor;
 
-        float sin = sin(angle);
-        float divisor = sq(sin) + 1;
-        float dividend = a * SQRT_2 * cos(angle);
-        float x = centerX + dividend / divisor;
-        float y = centerY + (dividend * sin) / divisor;
+            if (lastX >= 0) {
+                stroke(0, 255 * (1 - (float) currentStep / STEPS));
+                strokeWeight(10);
+                line(lastX, lastY, x, y);
+            } else {
+                drawMinutes(x, y);
+            }
 
-//        fill(0);
-//        ellipse( x,  + y, 10, 10);
-        stroke(0, 255 * (1 - (float) currentStep / STEPS));
+            lastX = x;
+            lastY = y;
+            angle += TWO_PI / STEPS;
+        }
+        fill(0);
+        text(String.format("%.1f / %.1f", frameRate, frameRateTarget), width - 100, height - 100);
+    }
+
+    private static final float MINUTES_RADIUS     = 200;
+
+    private static final float MINUTES_STEPS      = 60;
+
+    private static final float MINUTE_ANGLE_STEPS = TWO_PI / MINUTES_STEPS;
+
+    private void drawMinutes(float x, float y) {
+        float startAngle = minute2angle(minute(), second());
+
+        noFill();
         strokeWeight(10);
-        line(lastX, lastY, x, y);
+        for (int i = 0; i < MINUTES_STEPS; i++) {
+            float angle = startAngle + MINUTE_ANGLE_STEPS * i;
+            stroke(0, 255 * (1 - (float) i / MINUTES_STEPS));
+            arc(x, y, MINUTES_RADIUS, MINUTES_RADIUS, angle, angle + MINUTE_ANGLE_STEPS);
+        }
+        drawSeconds(x + cos(startAngle) * (MINUTES_RADIUS / 2), y + sin(startAngle) * (MINUTES_RADIUS / 2));
+    }
 
-        lastX = x;
-        lastY = y;
-        currentStep++;
-        currentStep %= STEPS;
-        angle += TWO_PI / STEPS;
+    private static final float SECONDS_RADIUS      = 60;
+
+    private static final float SECONDS_STEPS       = 60;
+
+    private static final float SECONDS_ANGLE_STEPS = TWO_PI / SECONDS_STEPS;
+
+    private void drawSeconds(float x, float y) {
+        float startAngle = seconds2angle(second());
+
+        noFill();
+        strokeWeight(2);
+        for (int i = 0; i < SECONDS_STEPS; i++) {
+            float angle = startAngle + SECONDS_ANGLE_STEPS * i;
+            stroke(0, 255 * (1 - (float) i / SECONDS_STEPS));
+            arc(x, y, SECONDS_RADIUS, SECONDS_RADIUS, angle, angle + MINUTE_ANGLE_STEPS);
+        }
     }
 
     /**
@@ -85,16 +104,19 @@ public class OrbitClock extends PApplet {
      * @param minutes
      * @return
      */
-    static float time2angle(int hours, int minutes) {
+    private static float hour2angle(int hours, int minutes) {
         return -TWO_PI * (hours / 24f + minutes / (24f * 60));
+    }
+
+    private static float minute2angle(int minutes, int seconds) {
+        return map(minutes + seconds / 60f, 0, 60, PI * -.5f, PI * 1.5f);
+    }
+
+    private static float seconds2angle(int seconds) {
+        return map(seconds, 0, 60, PI * -.5f, PI * 1.5f);
     }
 
     public static void main(String args[]) {
         PApplet.main(new String[] { "--present", OrbitClock.class.getName() });
-//        System.out.println("23:59 = " + degrees(time2angle(23, 59)));
-//        System.out.println("0:00 = " + degrees(time2angle(0, 0)));
-//        System.out.println("12:00 = " + degrees(time2angle(12, 0)));
-//        System.out.println("6:00 = " + degrees(time2angle(6, 0)));
-//        System.out.println("18:00 = " + degrees(time2angle(18, 0)));
     }
 }
