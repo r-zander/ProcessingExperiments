@@ -16,37 +16,35 @@ public class Colors {
 
     private static final Map<GradientKey, PGraphics> GRADIENT_CACHE = new HashMap<Colors.GradientKey, PGraphics>();
 
-    public static void drawGradient(PApplet parent, int x, int y, float width, float height, int colorFrom,
-            int colorTo, Axis axis) {
+    public static void drawGradient(PApplet parent, int x, int y, int width, int height, int colorFrom, int colorTo,
+            Axis axis) {
 
         GradientKey gradientKey = new GradientKey(width, height, colorFrom, colorTo, axis);
         PGraphics gradient = GRADIENT_CACHE.get(gradientKey);
         if (gradient == null) {
 
-            gradient = new PGraphics();
+            gradient = parent.createGraphics(width, height);
             gradient.beginDraw();
-
             gradient.noFill();
 
             switch (axis) {
                 case Y_AXIS: // Top to bottom gradient
                     for (int i = 0; i <= 0 + height; i++) {
-                        float inter = PApplet.map(i, 0, height, 0, 1);
-                        int c = gradient.lerpColor(colorFrom, colorTo, inter);
+                        int c = gradient.lerpColor(colorFrom, colorTo, i / (float) height);
                         gradient.stroke(c);
                         gradient.line(0, i, width, i);
                     }
                     break;
                 case X_AXIS: // Left to right gradient
                     for (int i = 0; i <= 0 + width; i++) {
-                        float inter = PApplet.map(i, 0, width, 0, 1);
-                        int c = gradient.lerpColor(colorFrom, colorTo, inter);
+                        int c = gradient.lerpColor(colorFrom, colorTo, i / (float) width);
                         gradient.stroke(c);
-                        gradient.line(i, 0, i, 0 + height);
+                        gradient.line(i, 0, i, height);
                     }
                     break;
             }
-
+            gradient.endDraw();
+            GRADIENT_CACHE.put(gradientKey, gradient);
         }
 
         parent.image(gradient, x, y);
@@ -69,46 +67,6 @@ public class Colors {
             this.height = height;
             this.colorFrom = colorFrom;
             this.colorTo = colorTo;
-            this.axis = axis;
-        }
-
-        public float getWidth() {
-            return width;
-        }
-
-        public void setWidth(float width) {
-            this.width = width;
-        }
-
-        public float getHeight() {
-            return height;
-        }
-
-        public void setHeight(float height) {
-            this.height = height;
-        }
-
-        public int getColorFrom() {
-            return colorFrom;
-        }
-
-        public void setColorFrom(int colorFrom) {
-            this.colorFrom = colorFrom;
-        }
-
-        public int getColorTo() {
-            return colorTo;
-        }
-
-        public void setColorTo(int colorTo) {
-            this.colorTo = colorTo;
-        }
-
-        public Axis getAxis() {
-            return axis;
-        }
-
-        public void setAxis(Axis axis) {
             this.axis = axis;
         }
 
