@@ -2,6 +2,8 @@ package timevisualization;
 
 import static util.Numbers.SQRT_2;
 import processing.core.PApplet;
+import util.Axis;
+import util.Colors;
 
 public class OrbitClock extends PApplet {
 
@@ -31,7 +33,7 @@ public class OrbitClock extends PApplet {
     public void draw() {
         float angle = hour2angle(hour(), minute());
         background(192);
-//        Colors.drawGradient(this, 0, 0, width, height, color(255, 192, 0), color(0, 0, 192), Axis.X_AXIS);
+        Colors.drawGradient(this, 0, 0, width, height, color(255, 192, 0), color(0, 0, 192), Axis.X_AXIS);
         float lastX = -1;
         float lastY = -1;
         for (int currentStep = 0; currentStep < STEPS; currentStep++) {
@@ -42,7 +44,7 @@ public class OrbitClock extends PApplet {
             float y = centerY + (dividend * sin) / divisor;
 
             if (lastX >= 0) {
-                stroke(0, 255 * (1 - (float) currentStep / STEPS));
+                setStroke(currentStep, STEPS);
                 strokeWeight(10);
                 line(lastX, lastY, x, y);
             } else {
@@ -55,6 +57,11 @@ public class OrbitClock extends PApplet {
         }
         fill(0);
         text(String.format("%.1f / %.1f", frameRate, frameRateTarget), width - 100, height - 100);
+    }
+
+    private void setStroke(float currentStep, float steps) {
+//        stroke(0, 255 * (1 - currentStep / steps));
+        stroke(255 * (1 - currentStep / steps), 255);
     }
 
     private static final float MINUTES_RADIUS     = 200;
@@ -70,7 +77,7 @@ public class OrbitClock extends PApplet {
         strokeWeight(10);
         for (int i = 0; i < MINUTES_STEPS; i++) {
             float angle = startAngle + MINUTE_ANGLE_STEPS * i;
-            stroke(0, 255 * (1 - (float) i / MINUTES_STEPS));
+            setStroke(i, MINUTES_STEPS);
             arc(x, y, MINUTES_RADIUS, MINUTES_RADIUS, angle, angle + MINUTE_ANGLE_STEPS);
         }
         drawSeconds(x + cos(startAngle) * (MINUTES_RADIUS / 2), y + sin(startAngle) * (MINUTES_RADIUS / 2));
@@ -89,8 +96,27 @@ public class OrbitClock extends PApplet {
         strokeWeight(2);
         for (int i = 0; i < SECONDS_STEPS; i++) {
             float angle = startAngle + SECONDS_ANGLE_STEPS * i;
-            stroke(0, 255 * (1 - (float) i / SECONDS_STEPS));
+            setStroke(i, SECONDS_STEPS);
             arc(x, y, SECONDS_RADIUS, SECONDS_RADIUS, angle, angle + MINUTE_ANGLE_STEPS);
+        }
+        drawMilliseconds(x + cos(startAngle) * (SECONDS_RADIUS / 2), y + sin(startAngle) * (SECONDS_RADIUS / 2));
+    }
+
+    private static final float MILLIS_RADIUS      = 30;
+
+    private static final float MILLIS_STEPS       = 100;
+
+    private static final float MILLIS_ANGLE_STEPS = TWO_PI / MILLIS_STEPS;
+
+    private void drawMilliseconds(float x, float y) {
+        float startAngle = millis2angle(millis() % 1000);
+
+        noFill();
+        strokeWeight(1);
+        for (int i = 0; i < MILLIS_STEPS; i++) {
+            float angle = startAngle + MILLIS_ANGLE_STEPS * i;
+            setStroke(i, MILLIS_STEPS);
+            arc(x, y, MILLIS_RADIUS, MILLIS_RADIUS, angle, angle + MILLIS_ANGLE_STEPS);
         }
     }
 
@@ -114,6 +140,10 @@ public class OrbitClock extends PApplet {
 
     private static float seconds2angle(int seconds) {
         return map(seconds, 0, 60, PI * -.5f, PI * 1.5f);
+    }
+
+    private static float millis2angle(int millis) {
+        return map(millis, 0, 1000, PI * -.5f, PI * 1.5f);
     }
 
     public static void main(String args[]) {
