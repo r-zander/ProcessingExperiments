@@ -11,17 +11,25 @@ public class OrbitClock extends PApplet {
 
     private static final long serialVersionUID = -56589606646834162L;
 
-    private static final int  STEPS            = 240;
+    private static enum ColorMode {
+        RANDOM,
+        BLACK_ALPHA,
+        BLACK_WHITE;
+    }
 
-    private static int        YELLOW;
+    private static final ColorMode COLOR_MODE = ColorMode.BLACK_WHITE;
 
-    private static int        BLUE;
+    private static final int       STEPS      = 240;
 
-    private float             a;
+    private static int             YELLOW;
 
-    private float             centerX;
+    private static int             BLUE;
 
-    private float             centerY;
+    private float                  a;
+
+    private float                  centerX;
+
+    private float                  centerY;
 
     private static enum Mode {
         ORB,
@@ -70,8 +78,6 @@ public class OrbitClock extends PApplet {
     @Override
     public void setup() {
         size(displayWidth, displayHeight);
-//        frameRate(1);
-//        noSmooth();
 
         a = width * .30f;
         centerX = width / 2;
@@ -127,10 +133,22 @@ public class OrbitClock extends PApplet {
     }
 
     private void drawBackground() {
-        Colors.drawGradient(this, 0, 0, width, height, YELLOW, BLUE, Axis.X_AXIS);
-
-        noFill();
-        stroke(0);
+        switch (COLOR_MODE) {
+            case RANDOM:
+                for (int i = 0; i <= 0 + width; i++) {
+                    stroke(color(random(255), random(255), random(255)));
+                    line(i, 0, i, height);
+                }
+                stroke(color(random(255), random(255), random(255)));
+                fill(color(random(255), random(255), random(255)));
+                break;
+            case BLACK_ALPHA:
+            case BLACK_WHITE:
+                Colors.drawGradient(this, 0, 0, width, height, YELLOW, BLUE, Axis.X_AXIS);
+                noFill();
+                stroke(0);
+                break;
+        }
         strokeWeight(3);
         Shapes.sun(this, centerX - a, centerY, width * .1f);
         Shapes.moon(this, centerX + a, centerY, width * .05f);
@@ -157,15 +175,10 @@ public class OrbitClock extends PApplet {
             float x = centerX + dividend / divisor;
             float y = centerY + (dividend * sin) / divisor;
 
-//            setStroke(currentStep, STEPS);
-//            strokeWeight(lineWidth);
-//            line(lastX, lastY, x, y);
-
             float angleBetween = TwoDimensional.angleBetween(lastX, lastY, x, y) + HALF_PI;
-//            strokeWeight(1);
             noStroke();
             setFill(currentStep, STEPS);
-            int lineWidth = 30;
+            int lineWidth = 10;
             float distX = cos(angleBetween) * lineWidth;
             float distY = sin(angleBetween) * lineWidth;
             float x1 = x - distX;
@@ -196,15 +209,31 @@ public class OrbitClock extends PApplet {
     }
 
     private void setStroke(float currentStep, float steps) {
-        stroke(0, 255 * (1 - currentStep / steps));
-//        
-//        stroke(255 * (1 - currentStep / steps), 255);
+        switch (COLOR_MODE) {
+            case RANDOM:
+                stroke(color(random(255), random(255), random(255)));
+                break;
+            case BLACK_WHITE:
+                stroke(255 * (currentStep / steps), 255);
+                break;
+            case BLACK_ALPHA:
+                stroke(0, 255 * (1 - currentStep / steps));
+                break;
+        }
     }
 
     private void setFill(float currentStep, float steps) {
-//        fill(color(random(255), random(255), random(255)));
-        fill(0, 255 * (1 - currentStep / steps));
-//        fill(255 * (1 - currentStep / steps), 255);
+        switch (COLOR_MODE) {
+            case RANDOM:
+                fill(color(random(255), random(255), random(255)));
+                break;
+            case BLACK_WHITE:
+                fill(255 * (currentStep / steps), 255);
+                break;
+            case BLACK_ALPHA:
+                fill(0, 255 * (1 - currentStep / steps));
+                break;
+        }
     }
 
     private void drawMinutes(float x, float y) {
