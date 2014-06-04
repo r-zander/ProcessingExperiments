@@ -14,7 +14,7 @@ public class Colors {
         return Numbers.random(0xFF000000, 0xFFFFFFFF);
     }
 
-    private static final Map<GradientKey, PGraphics> GRADIENT_CACHE = new HashMap<Colors.GradientKey, PGraphics>();
+    private static final Map<GradientKey, PGraphics> GRADIENT_CACHE = new HashMap<GradientKey, PGraphics>();
 
     public static void drawGradient(PApplet parent, int x, int y, int width, int height, int colorFrom, int colorTo,
             Axis axis) {
