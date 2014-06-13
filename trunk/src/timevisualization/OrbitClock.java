@@ -17,7 +17,7 @@ public class OrbitClock extends PApplet {
         BLACK_WHITE;
     }
 
-    private static final ColorMode COLOR_MODE = ColorMode.BLACK_WHITE;
+    private static final ColorMode COLOR_MODE = ColorMode.BLACK_ALPHA;
 
     private static final int       STEPS      = 240;
 
@@ -178,7 +178,7 @@ public class OrbitClock extends PApplet {
             float angleBetween = TwoDimensional.angleBetween(lastX, lastY, x, y) + HALF_PI;
             noStroke();
             setFill(currentStep, STEPS);
-            int lineWidth = 10;
+            int lineWidth = 30;
             float distX = cos(angleBetween) * lineWidth;
             float distY = sin(angleBetween) * lineWidth;
             float x1 = x - distX;
