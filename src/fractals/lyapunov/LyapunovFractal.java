@@ -1,70 +1,204 @@
 package fractals.lyapunov;
 
 import processing.core.PApplet;
+import processing.core.PImage;
+import processing.event.MouseEvent;
+import util.structures.FloatRange;
 
 public class LyapunovFractal extends PApplet {
 
     private static final long   serialVersionUID = -987763235416578283L;
 
-    private static final String SEQUENCE         = "BBBBBBAAAAAA";
+    private static final String SEQUENCE         = "BBBBBBAAAAAA";                      // = "BBBBBBAAAAAA";
 
     private static final char[] SEQUENCE_ARRAY   = SEQUENCE.toUpperCase().toCharArray();
 
-    private static final float  A_MIN            = 3.4f;
+    private static class Section {
 
-    private static final float  A_MAX            = 4f;
+        public static FloatRange A;
 
-    private static final float  B_MIN            = 2.5f;
+        public static FloatRange B;
 
-    private static final float  B_MAX            = 3.4f;
+        static {
+            reset();
+        }
 
-    private static final int    ITERATIONS       = 80;
+        public static void reset() {
+            A = new FloatRange(3, 4);
+            B = new FloatRange(3, 4);
+        }
+    }
 
-    int                         bgColor          = 0xFF000000;
+//    private static final float MIN_MULTIPLIER = 1;
+//
+//    private static final float MAX_MULTIPLIER = 3;
+
+//    private static final float  MULTIPLIER_STEPS = .1f;
+
+    private static final int ITERATIONS = 60;
+
+    int                      bgColor    = 0xFF000000;
 
     @Override
     public void setup() {
-        size(800, 800);
+        size(400, 400);
+//        size(100, 100);
         background(bgColor);
-        frameRate(5);
+        frameRate(20);
 
         stroke(255);
         fill(255);
+//        noLoop();
     }
 
+    int animationFrame = 0;
+
     private void drawFractal() {
+//        pushMatrix();
+//        rotate(-HALF_PI);
+//        translate(-width, 0);
+
+        int iterations = ITERATIONS;
+//        int iterations = round(loopMap(animationFrame, 0, 60, 5, 55));
+        float multiplier = loopMap(animationFrame, 0, 200, 0.5f, 1);
+        int skippedIterations = 20;
+        double x0 = 0.5;
+//        double x0 = loopMap(animationFrame, 0, 300, 0.1, 1);
+        System.out.println(multiplier);
+
+//        float[] abMinMax =
+//                loopMap(animationFrame, 20, new float[] { 0, 0 }, new float[] { 4 - A_DISTANCE, 4 - B_DISTANCE });
+//        System.out.println(Arrays.toString(abMinMax));
+
+        PImage fractal = new PImage(width, height);
+        fractal.loadPixels();
+
+        double minLambda = Double.POSITIVE_INFINITY;
+        double maxLambda = Double.NEGATIVE_INFINITY;
+        double[][] lambdas = new double[width][height];
+
         for (int x = 1; x < width; x++) {
             for (int y = 1; y < height; y++) {
-//                float a = map(x, 0, width, A_MIN, A_MAX);
-//                float b = map(y, 0, height, B_MIN, B_MAX);
+                float a = map(x, 0, width, Section.A.min, Section.A.max);
+                float b = map(y, 0, height, Section.B.min, Section.B.max);
 
-                float a = 2;
-                float b = 3;
-
-                double xn = 0.5;
+                double xn = x0;
                 double sum = 0;
-                for (int i = 1; i < ITERATIONS; i++) {
+                for (int i = 1; i < iterations; i++) {
                     float rn;
                     if (SEQUENCE_ARRAY[i % SEQUENCE_ARRAY.length] == 'A') {
                         rn = a;
                     } else {
                         rn = b;
                     }
-                    xn = rn * xn * (1 - xn);
-//                    sum += fastLog(Math.abs(rn * (1 - 2 * xn)));
+                    xn = multiplier * rn * xn * (1 - xn);
+                    if (i > skippedIterations) {
+                        sum += fastLog(Math.abs(rn * (1 - 2 * xn)));
+                    }
                 }
-                double lamda = (1.0 / ITERATIONS) * sum;
-//                int color;
-//                color = lerpColor(0xffffff00, 0xff0000ff, (float) map(lamda, -1.5, 0.6, 0, 1));
-//                stroke(color);
-//                point(x, y);
+                double lambda = (1.0 / ITERATIONS) * sum;
+                if (lambda > maxLambda) {
+                    maxLambda = lambda;
+                }
+                if (lambda < minLambda) {
+                    minLambda = lambda;
+                }
+                lambdas[x][y] = lambda;
             }
         }
+        for (int x = 1; x < width; x++) {
+            for (int y = 1; y < height; y++) {
+                int color =
+                        lerpColor(
+                                0xffffff00,
+                                0xff0000ff,
+                                (float) map(lambdas[x][y], minLambda * .5f, maxLambda * .5f, 0, 1));
+//                int color = lerpColor(0xffffffff, 0xff000000, (float) map(lambdas[x][y], minLambda, maxLambda, 0, 1));
+//                int color =
+//                        lerpColor(
+//                                0xff000000,
+//                                0xffffffff,
+//                                (float) map(lambdas[x][y], minLambda * .5f, maxLambda * .5f, 0, 1));
+                fractal.set(x, y, color);
+            }
+        }
+        fractal.updatePixels();
+        image(fractal, 0, 0);
+//        popMatrix();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent event) {
+        super.mouseClicked(event);
+
+        if (event.getButton() == RIGHT) {
+            Section.reset();
+            return;
+        }
+
+        float aDistance = Section.A.distance() / 4;
+        float bDistance = Section.B.distance() / 4;
+
+        float ax = map(event.getX(), 0, width, Section.A.min, Section.A.max);
+        Section.A.min = ax - aDistance;
+        Section.A.max = ax + aDistance;
+
+        float bx = map(event.getY(), 0, height, Section.B.min, Section.B.max);
+        Section.B.min = bx - bDistance;
+        Section.B.max = bx + bDistance;
+
+    }
+
+    private static float[] loopMap(int value, int maxValue, float[] minReturn, float[] maxReturn) {
+        float[] returnValues = new float[minReturn.length];
+        for (int i = 0; i < minReturn.length; i++) {
+            returnValues[i] = loopMap(value, 0, maxValue, minReturn[i], maxReturn[i]);
+        }
+        return returnValues;
+    }
+
+    private static double[] loopMap(int value, int maxValue, double[] minReturn, double[] maxReturn) {
+        double[] returnValues = new double[minReturn.length];
+        for (int i = 0; i < minReturn.length; i++) {
+            returnValues[i] = loopMap(value, 0, maxValue, minReturn[i], maxReturn[i]);
+        }
+        return returnValues;
+    }
+
+    private static float loopMap(float value, float minValue, float maxValue, float minReturn, float maxReturn) {
+        float returnValue = map(value % maxValue, minValue, maxValue, minReturn, maxReturn);
+        if (value / maxValue % 2 >= 1) {
+            /*
+             * Backward loop
+             */
+            return maxReturn - returnValue + minReturn;
+        }
+
+        return returnValue;
+    }
+
+    private static double loopMap(double value, double minValue, double maxValue, double minReturn, double maxReturn) {
+        double returnValue = map(value % maxValue, minValue, maxValue, minReturn, maxReturn);
+        if (value / maxValue % 2 >= 1) {
+            /*
+             * Backward loop
+             */
+            return maxValue - returnValue + minReturn;
+        }
+
+        return returnValue;
     }
 
     @Override
     public void draw() {
         drawFractal();
+        writeFrames();
+        animationFrame++;
+    }
+
+    private void writeFrames() {
+        fill(255, 128, 0);
+        text(animationFrame, width - 100, height - 50);
     }
 
     static public double map(double value, double start1, double stop1, double start2, double stop2) {
@@ -72,8 +206,8 @@ public class LyapunovFractal extends PApplet {
     }
 
     public static double fastLog(double x) {
-//        return 6 * (x - 1) / (x + 1 + 4 * (Math.sqrt(x)));
-        return Math.log(x);
+        return 6 * (x - 1) / (x + 1 + 4 * (Math.sqrt(x)));
+//        return Math.log(x);
     }
 
     public static void main(String args[]) {
