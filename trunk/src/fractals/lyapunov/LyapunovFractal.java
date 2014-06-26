@@ -35,13 +35,16 @@ public class LyapunovFractal extends PApplet {
 
 //    private static final float  MULTIPLIER_STEPS = .1f;
 
-    private static final int ITERATIONS = 60;
+    private static final int ITERATIONS     = 60;
 
-    int                      bgColor    = 0xFF000000;
+    int                      bgColor        = 0xFF000000;
+
+    int                      animationFrame = 0;
 
     @Override
     public void setup() {
         size(400, 400);
+//        size(displayWidth, displayHeight);
 //        size(100, 100);
         background(bgColor);
         frameRate(20);
@@ -51,7 +54,16 @@ public class LyapunovFractal extends PApplet {
 //        noLoop();
     }
 
-    int animationFrame = 0;
+    @Override
+    public void draw() {
+        drawFractal();
+        writeFrames();
+        animationFrame++;
+
+        if (keyPressed && key == ' ') {
+            save(getClass().getSimpleName() + ".png");
+        }
+    }
 
     private void drawFractal() {
 //        pushMatrix();
@@ -60,11 +72,11 @@ public class LyapunovFractal extends PApplet {
 
         int iterations = ITERATIONS;
 //        int iterations = round(loopMap(animationFrame, 0, 60, 5, 55));
-        float multiplier = loopMap(animationFrame, 0, 200, 0.5f, 1);
+//        float multiplier = loopMap(animationFrame, 0, 200, 0.5f, 1);
         int skippedIterations = 20;
-        double x0 = 0.5;
-//        double x0 = loopMap(animationFrame, 0, 300, 0.1, 1);
-        System.out.println(multiplier);
+//        double x0 = 0.5;
+        double x0 = loopMap(animationFrame, 0, 30, 0.5, 0.6);
+        System.out.println(x0);
 
 //        float[] abMinMax =
 //                loopMap(animationFrame, 20, new float[] { 0, 0 }, new float[] { 4 - A_DISTANCE, 4 - B_DISTANCE });
@@ -91,7 +103,7 @@ public class LyapunovFractal extends PApplet {
                     } else {
                         rn = b;
                     }
-                    xn = multiplier * rn * xn * (1 - xn);
+                    xn = rn * xn * (1 - xn);
                     if (i > skippedIterations) {
                         sum += fastLog(Math.abs(rn * (1 - 2 * xn)));
                     }
@@ -108,11 +120,12 @@ public class LyapunovFractal extends PApplet {
         }
         for (int x = 1; x < width; x++) {
             for (int y = 1; y < height; y++) {
-                int color =
-                        lerpColor(
-                                0xffffff00,
-                                0xff0000ff,
-                                (float) map(lambdas[x][y], minLambda * .5f, maxLambda * .5f, 0, 1));
+                int color;
+                if (lambdas[x][y] <= 0) {
+                    color = lerpColor(0xffffff00, 0xff000000, (float) (lambdas[x][y] / minLambda));
+                } else {
+                    color = lerpColor(0xff000000, 0xff0000ff, (float) (lambdas[x][y] / maxLambda));
+                }
 //                int color = lerpColor(0xffffffff, 0xff000000, (float) map(lambdas[x][y], minLambda, maxLambda, 0, 1));
 //                int color =
 //                        lerpColor(
@@ -183,17 +196,10 @@ public class LyapunovFractal extends PApplet {
             /*
              * Backward loop
              */
-            return maxValue - returnValue + minReturn;
+            return maxReturn - returnValue + minReturn;
         }
 
         return returnValue;
-    }
-
-    @Override
-    public void draw() {
-        drawFractal();
-        writeFrames();
-        animationFrame++;
     }
 
     private void writeFrames() {
