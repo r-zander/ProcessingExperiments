@@ -3,6 +3,7 @@ package fractals.lyapunov;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.event.MouseEvent;
+import util.ApproximationMath;
 import util.structures.FloatRange;
 
 public class LyapunovFractal extends PApplet {
@@ -24,8 +25,10 @@ public class LyapunovFractal extends PApplet {
         }
 
         public static void reset() {
-            A = new FloatRange(3, 4);
-            B = new FloatRange(3, 4);
+//            A = new FloatRange(3, 4);
+//            B = new FloatRange(3, 4);
+            A = new FloatRange(3.4f, 4);
+            B = new FloatRange(2.5f, 3.4f);
         }
     }
 
@@ -47,10 +50,11 @@ public class LyapunovFractal extends PApplet {
 //        size(displayWidth, displayHeight);
 //        size(100, 100);
         background(bgColor);
-        frameRate(20);
+//        frameRate(20);
 
         stroke(255);
         fill(255);
+        colorMode(HSB);
 //        noLoop();
     }
 
@@ -75,12 +79,7 @@ public class LyapunovFractal extends PApplet {
 //        float multiplier = loopMap(animationFrame, 0, 200, 0.5f, 1);
         int skippedIterations = 20;
 //        double x0 = 0.5;
-        double x0 = loopMap(animationFrame, 0, 30, 0.5, 0.6);
-        System.out.println(x0);
-
-//        float[] abMinMax =
-//                loopMap(animationFrame, 20, new float[] { 0, 0 }, new float[] { 4 - A_DISTANCE, 4 - B_DISTANCE });
-//        System.out.println(Arrays.toString(abMinMax));
+        double x0 = loopMap(animationFrame, 0, 3000, 0.1, 0.9);
 
         PImage fractal = new PImage(width, height);
         fractal.loadPixels();
@@ -105,7 +104,7 @@ public class LyapunovFractal extends PApplet {
                     }
                     xn = rn * xn * (1 - xn);
                     if (i > skippedIterations) {
-                        sum += fastLog(Math.abs(rn * (1 - 2 * xn)));
+                        sum += ApproximationMath.fasterlog((float) Math.abs(rn * (1 - 2 * xn)));
                     }
                 }
                 double lambda = (1.0 / ITERATIONS) * sum;
@@ -122,16 +121,19 @@ public class LyapunovFractal extends PApplet {
             for (int y = 1; y < height; y++) {
                 int color;
                 if (lambdas[x][y] <= 0) {
-                    color = lerpColor(0xffffff00, 0xff000000, (float) (lambdas[x][y] / minLambda));
+                    /*
+                     * Order coloring
+                     */
+//                    color = lerpColor(0xffffff00, 0xff000000, (float) (lambdas[x][y] / minLambda));
+                    color = color(255 * (float) (lambdas[x][y] / minLambda), 255, 255);
                 } else {
-                    color = lerpColor(0xff000000, 0xff0000ff, (float) (lambdas[x][y] / maxLambda));
+                    /*
+                     * Chaos coloring
+                     */
+//                    color = lerpColor(0xff000000, 0xffffffff, (float) (lambdas[x][y] / maxLambda));
+//                    color = color(255 * (float) (lambdas[x][y] / maxLambda));
+                    color = 0xff000000;
                 }
-//                int color = lerpColor(0xffffffff, 0xff000000, (float) map(lambdas[x][y], minLambda, maxLambda, 0, 1));
-//                int color =
-//                        lerpColor(
-//                                0xff000000,
-//                                0xffffffff,
-//                                (float) map(lambdas[x][y], minLambda * .5f, maxLambda * .5f, 0, 1));
                 fractal.set(x, y, color);
             }
         }
@@ -203,17 +205,21 @@ public class LyapunovFractal extends PApplet {
     }
 
     private void writeFrames() {
-        fill(255, 128, 0);
-        text(animationFrame, width - 100, height - 50);
+        int x2 = width;
+        int x1 = x2 - 120;
+        int y2 = height;
+        int y1 = y2 - 20;
+        fill(0, 0, 0);
+        noStroke();
+        rect(x1, y1, x2, y2);
+        fill(192, 192, 192);
+        textSize(15);
+//      textAlign(CENTER, CENTER);
+        text(String.format("%d @ %.1f fps", animationFrame, frameRate), x1, y1, x2, y2);
     }
 
     static public double map(double value, double start1, double stop1, double start2, double stop2) {
         return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
-    }
-
-    public static double fastLog(double x) {
-        return 6 * (x - 1) / (x + 1 + 4 * (Math.sqrt(x)));
-//        return Math.log(x);
     }
 
     public static void main(String args[]) {
