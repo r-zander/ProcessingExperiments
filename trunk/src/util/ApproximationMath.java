@@ -8,13 +8,17 @@ public class ApproximationMath {
 
     private ApproximationMath() {}
 
+    public static final double HALF_PI   = Math.PI / 2;
+
+    public static final double DOUBLE_PI = Math.PI * 2;
+
     /**
-     * By Machined Learnings
+     * By Machined Learnings. 20 times faster, about 1.3% derivation.
      * 
      * @param x
      * @return
      */
-    public static float fasterlog(float x) {
+    public static float log(float x) {
         /*
          * Original C code:
          * union { float f; uint32_t i; } vx = { x };
@@ -27,58 +31,69 @@ public class ApproximationMath {
         return y - 87.989971088f;
     }
 
-    /**
-     * By http://martin.ankerl.com/2007/02/11/optimized-exponential-functions-for-java/
-     * <b>Do not use!</b> Only here for comparison. Very poor accuracy and only half as fast as
-     * {@link #fasterlog(float)}.
-     * 
-     * @param x
-     * @return
-     */
-    private static double fastLog(double x) {
-        return 6 * (x - 1) / (x + 1 + 4 * (Math.sqrt(x)));
+    public static float log2(float x) {
+        float y = Float.floatToIntBits(x);
+        y *= 1.1920928955078125e-7f;
+        return y - 126.94269504f;
     }
 
-    public static void main(String[] args) {
-        float[] valuesToTest = new float[] { 0.01f, 0.1f, 1, 10, 100, 1000, 10000 };
-        for (float value : valuesToTest) {
-            double mathLog = Math.log(value);
-            double fastLog = fastLog(value);
-            float fasterlog = fasterlog(value);
+    private static final double B = 4 / Math.PI;
 
-            System.out.println(String.format(
-                    "%f: mathLog = %f | fastLog = %f | fasterLog = %f",
-                    value,
-                    mathLog,
-                    fastLog,
-                    fasterlog));
+    private static final double C = -4 / (Math.PI * Math.PI);
+
+    // private static final double Q = 0.775;
+    private static final double P = 0.225;
+
+    /**
+     * From http://forum.devmaster.net/t/fast-and-accurate-sine-cosine/9648
+     * 
+     * @param x
+     * @param extraPrecision
+     *            increase precision by factor 50
+     * @return
+     */
+    public static double sin(double x, boolean extraPrecision) {
+        if (x < -Math.PI) {
+            x += DOUBLE_PI;
+        } else if (x > Math.PI) {
+            x -= DOUBLE_PI;
         }
 
-        long numberOfCalls = Math.round(Math.pow(10, 7));
-        System.out.println("Number of calls: " + numberOfCalls);
-        long startTime, estimatedTime;
-        float log;
+        return internalSine(x, extraPrecision);
+    }
 
-        log = 0.01f;
-        startTime = System.nanoTime();
-        for (int i = 0; i < numberOfCalls; i++) {
-            log = (float) Math.log(log);
-        }
-        estimatedTime = System.nanoTime() - startTime;
-        System.out.println("MathLog   = " + estimatedTime + "ns");
+    public static double sin(double x) {
+        return sin(x, false);
+    }
 
-        startTime = System.nanoTime();
-        for (int i = 0; i < numberOfCalls; i++) {
-            log = (float) fastLog(log);
+    /**
+     * From http://forum.devmaster.net/t/fast-and-accurate-sine-cosine/9648
+     * 
+     * @param x
+     * @param extraPrecision
+     *            increase precision by factor 50
+     * @return
+     */
+    public static double cos(double x, boolean extraPrecision) {
+        x += HALF_PI;
+        if (x > Math.PI) {
+            x -= 2 * Math.PI;
         }
-        estimatedTime = System.nanoTime() - startTime;
-        System.out.println("fastLog   = " + estimatedTime + "ns");
 
-        startTime = System.nanoTime();
-        for (int i = 0; i < numberOfCalls; i++) {
-            log = fasterlog(log);
+        return internalSine(x, extraPrecision);
+    }
+
+    public static double cos(double x) {
+        return cos(x, false);
+    }
+
+    public static double internalSine(double x, boolean extraPrecision) {
+        double y = B * x + C * x * Math.abs(x);
+
+        if (extraPrecision) {
+
+            y = P * (y * Math.abs(y) - y) + y;   // Q * y + P * y * abs(y)
         }
-        estimatedTime = System.nanoTime() - startTime;
-        System.out.println("fasterlog = " + estimatedTime + "ns");
+        return y;
     }
 }
