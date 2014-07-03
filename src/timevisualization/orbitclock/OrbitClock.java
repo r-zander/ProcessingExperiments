@@ -1,11 +1,10 @@
-package timevisualization;
+package timevisualization.orbitclock;
 
-import static util.Numbers.SQRT_2;
 import processing.core.PApplet;
 import util.Axis;
 import util.Colors;
-import util.Shapes;
 import util.TwoDimensional;
+import util.structures.Point;
 
 public class OrbitClock extends PApplet {
 
@@ -13,19 +12,20 @@ public class OrbitClock extends PApplet {
 
     private static enum ColorMode {
         RANDOM,
+        BLACK_WHITE,
         BLACK_ALPHA,
-        BLACK_WHITE;
+        YELLOW_BLUE;
     }
 
-    private static final ColorMode COLOR_MODE = ColorMode.BLACK_ALPHA;
+    private static final ColorMode COLOR_MODE = ColorMode.YELLOW_BLUE;
+
+    private CurveFunction          function;
 
     private static final int       STEPS      = 240;
 
     private static int             YELLOW;
 
     private static int             BLUE;
-
-    private float                  a;
 
     private float                  centerX;
 
@@ -79,9 +79,11 @@ public class OrbitClock extends PApplet {
     public void setup() {
         size(displayWidth, displayHeight);
 
-        a = width * .30f;
         centerX = width / 2;
         centerY = height / 2;
+
+        function = new LemniscateOfBernoulli(width * .30f);
+//        function = new Hippopede(width * .2f, 1f, 1f);
 
         YELLOW = color(255, 192, 0);
         BLUE = color(0, 0, 192);
@@ -148,32 +150,43 @@ public class OrbitClock extends PApplet {
                 noFill();
                 stroke(0);
                 break;
+            case YELLOW_BLUE:
+                background(255);
+                noFill();
+                stroke(0);
+                break;
+
         }
         strokeWeight(3);
-        Shapes.sun(this, centerX - a, centerY, width * .1f);
-        Shapes.moon(this, centerX + a, centerY, width * .05f);
+//        Shapes.sun(this, centerX - a, centerY, width * .1f);
+//        Shapes.moon(this, centerX + a, centerY, width * .05f);
     }
 
     private void drawLemniscate() {
-        float angle = hour2angle(hour(), minute());
-        float sin = sin(angle);
-        float divisor = sq(sin) + 1;
-        float dividend = a * SQRT_2 * cos(angle);
-        float startX = centerX + dividend / divisor;
-        float startY = centerY + (dividend * sin) / divisor;
+        noSmooth();
+        float angle;
+        switch (COLOR_MODE) {
+            case YELLOW_BLUE:
+                angle = PI;
+                break;
+            default:
+                angle = hour2angle(hour(), minute());
+
+        }
+        Point startPoint = function.calculate(angle);
+        float startX = centerX + startPoint.x;
+        float startY = centerY + startPoint.y;
         float lastX = startX;
         float lastY = startY;
         float lastX1 = -1;
         float lastY1 = -1;
         float lastX2 = -1;
         float lastY2 = -1;
-        for (int currentStep = 0; currentStep < STEPS; currentStep++) {
+        for (int currentStep = 0; currentStep <= STEPS; currentStep++) {
             angle += TWO_PI / STEPS;
-            sin = sin(angle);
-            divisor = sq(sin) + 1;
-            dividend = a * SQRT_2 * cos(angle);
-            float x = centerX + dividend / divisor;
-            float y = centerY + (dividend * sin) / divisor;
+            Point point = function.calculate(angle);
+            float x = centerX + point.x;
+            float y = centerY + point.y;
 
             float angleBetween = TwoDimensional.angleBetween(lastX, lastY, x, y) + HALF_PI;
             noStroke();
@@ -198,6 +211,17 @@ public class OrbitClock extends PApplet {
             lastX = x;
             lastY = y;
         }
+        switch (COLOR_MODE) {
+            case YELLOW_BLUE:
+                angle = hour2angle(hour(), minute());
+                Point point = function.calculate(angle);
+                startX = centerX + point.x;
+                startY = centerY + point.y;
+                break;
+            default:
+                break;
+        }
+        smooth();
         drawMinutes(startX, startY);
     }
 
@@ -216,6 +240,7 @@ public class OrbitClock extends PApplet {
             case BLACK_WHITE:
                 stroke(255 * (currentStep / steps), 255);
                 break;
+            case YELLOW_BLUE:
             case BLACK_ALPHA:
                 stroke(0, 255 * (1 - currentStep / steps));
                 break;
@@ -233,6 +258,12 @@ public class OrbitClock extends PApplet {
             case BLACK_ALPHA:
                 fill(0, 255 * (1 - currentStep / steps));
                 break;
+            case YELLOW_BLUE:
+                float halfSteps = steps / 2f;
+                if (currentStep > halfSteps) {
+                    currentStep = steps - currentStep;
+                }
+                fill(lerpColor(YELLOW, BLUE, currentStep / halfSteps));
         }
     }
 

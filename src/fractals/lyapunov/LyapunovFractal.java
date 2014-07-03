@@ -10,7 +10,10 @@ public class LyapunovFractal extends PApplet {
 
     private static final long   serialVersionUID = -987763235416578283L;
 
-    private static final String SEQUENCE         = "BBBBBBAAAAAA";                      // = "BBBBBBAAAAAA";
+    private static final String SEQUENCE         = "BBBBBBAAAAAA";
+
+    // = "AAAAAABBBBBB";
+    // = "BBBBBBAAAAAA";
 
     private static final char[] SEQUENCE_ARRAY   = SEQUENCE.toUpperCase().toCharArray();
 
@@ -25,12 +28,23 @@ public class LyapunovFractal extends PApplet {
         }
 
         public static void reset() {
+//            A = new FloatRange(0, 4);
+//            B = new FloatRange(0, 4);
 //            A = new FloatRange(3, 4);
 //            B = new FloatRange(3, 4);
             A = new FloatRange(3.4f, 4);
             B = new FloatRange(2.5f, 3.4f);
+//            A = new FloatRange(HALF_PI, PI);
+//            B = new FloatRange(HALF_PI, PI);
         }
     }
+
+    private static enum LogisticFunction {
+        SQUARE,
+        SINUS;
+    }
+
+    private static final LogisticFunction USED_LOGISTIC_FUNCTION = LogisticFunction.SQUARE;
 
 //    private static final float MIN_MULTIPLIER = 1;
 //
@@ -38,16 +52,16 @@ public class LyapunovFractal extends PApplet {
 
 //    private static final float  MULTIPLIER_STEPS = .1f;
 
-    private static final int ITERATIONS     = 60;
+    private static final int              ITERATIONS             = 60;
 
-    int                      bgColor        = 0xFF000000;
+    int                                   bgColor                = 0xFF000000;
 
-    int                      animationFrame = 0;
+    int                                   animationFrame         = 0;
 
     @Override
     public void setup() {
-        size(400, 400);
-//        size(displayWidth, displayHeight);
+//        size(400, 400);
+        size(displayWidth, displayHeight);
 //        size(100, 100);
         background(bgColor);
 //        frameRate(20);
@@ -76,10 +90,11 @@ public class LyapunovFractal extends PApplet {
 
         int iterations = ITERATIONS;
 //        int iterations = round(loopMap(animationFrame, 0, 60, 5, 55));
-//        float multiplier = loopMap(animationFrame, 0, 200, 0.5f, 1);
+        float multiplier = loopMap(animationFrame, 0, 300, 0.1f, 5f);
+//        float multiplier = 1;
         int skippedIterations = 20;
-//        double x0 = 0.5;
-        double x0 = loopMap(animationFrame, 0, 3000, 0.1, 0.9);
+        double x0 = 0.5;
+//        double x0 = loopMap(animationFrame, 0, 3000, 0.1, 0.9);
 
         PImage fractal = new PImage(width, height);
         fractal.loadPixels();
@@ -102,10 +117,27 @@ public class LyapunovFractal extends PApplet {
                     } else {
                         rn = b;
                     }
-                    xn = rn * xn * (1 - xn);
-                    if (i > skippedIterations) {
-                        sum += ApproximationMath.fasterlog((float) Math.abs(rn * (1 - 2 * xn)));
+
+                    switch (USED_LOGISTIC_FUNCTION) {
+                        case SINUS:
+                            double sin = ApproximationMath.sin(xn + rn);
+                            xn = multiplier * sin * sin;
+                            sum +=
+                                    ApproximationMath.log((float) Math.abs(2 * multiplier * sin
+                                            * ApproximationMath.cos(xn + rn)));
+                            break;
+                        case SQUARE:
+                            xn = rn * xn * (1 - xn);
+                            if (i > skippedIterations) {
+                                sum += ApproximationMath.log((float) Math.abs(rn * (1 - 2 * xn)));
+                            }
+//                            xn = rn * xn * (1 - xn);
+//                            if (i > skippedIterations) {
+//                                sum += ApproximationMath.fasterlog((float) Math.abs(rn * (1 - 2 * xn)));
+//                            }
+                            break;
                     }
+
                 }
                 double lambda = (1.0 / ITERATIONS) * sum;
                 if (lambda > maxLambda) {
@@ -131,8 +163,8 @@ public class LyapunovFractal extends PApplet {
                      * Chaos coloring
                      */
 //                    color = lerpColor(0xff000000, 0xffffffff, (float) (lambdas[x][y] / maxLambda));
-//                    color = color(255 * (float) (lambdas[x][y] / maxLambda));
-                    color = 0xff000000;
+                    color = color(255 * (float) (lambdas[x][y] / maxLambda));
+//                    color = 0xff000000;
                 }
                 fractal.set(x, y, color);
             }
