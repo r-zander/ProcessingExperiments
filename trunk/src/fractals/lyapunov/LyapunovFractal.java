@@ -60,15 +60,15 @@ public class LyapunovFractal extends PApplet {
 
     @Override
     public void setup() {
-//        size(400, 400);
-        size(displayWidth, displayHeight);
+        size(400, 400);
+//        size(displayWidth, displayHeight);
 //        size(100, 100);
         background(bgColor);
 //        frameRate(20);
 
         stroke(255);
         fill(255);
-        colorMode(HSB);
+//        colorMode(HSB);
 //        noLoop();
     }
 
@@ -93,8 +93,8 @@ public class LyapunovFractal extends PApplet {
         float multiplier = loopMap(animationFrame, 0, 300, 0.1f, 5f);
 //        float multiplier = 1;
         int skippedIterations = 20;
-        double x0 = 0.5;
-//        double x0 = loopMap(animationFrame, 0, 3000, 0.1, 0.9);
+//        double x0 = 0.5;
+        double x0 = loopMap(animationFrame, 0, 3000, 0.1, 0.9);
 
         PImage fractal = new PImage(width, height);
         fractal.loadPixels();
@@ -156,14 +156,15 @@ public class LyapunovFractal extends PApplet {
                     /*
                      * Order coloring
                      */
-//                    color = lerpColor(0xffffff00, 0xff000000, (float) (lambdas[x][y] / minLambda));
-                    color = color(255 * (float) (lambdas[x][y] / minLambda), 255, 255);
+                    color = lerpColor(0xffffff00, 0xff000000, (float) (lambdas[x][y] / minLambda));
+//                    color = color(255 * (float) (lambdas[x][y] / minLambda), 255, 255);
                 } else {
                     /*
                      * Chaos coloring
                      */
-//                    color = lerpColor(0xff000000, 0xffffffff, (float) (lambdas[x][y] / maxLambda));
-                    color = color(255 * (float) (lambdas[x][y] / maxLambda));
+//                  color = lerpColor(0xff000000, 0xffffffff, (float) (lambdas[x][y] / maxLambda));
+                    color = lerpColor(0xff000000, 0xff0000ff, (float) (lambdas[x][y] / maxLambda));
+//                    color = color(255 * (float) (lambdas[x][y] / maxLambda));
 //                    color = 0xff000000;
                 }
                 fractal.set(x, y, color);
