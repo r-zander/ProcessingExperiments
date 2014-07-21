@@ -190,7 +190,18 @@ public class OrbitClock extends PApplet {
 
             float angleBetween = TwoDimensional.angleBetween(lastX, lastY, x, y) + HALF_PI;
             noStroke();
-            setFill(currentStep, STEPS);
+
+            switch (COLOR_MODE) {
+//                case YELLOW_BLUE:
+//                    float halfSteps = steps / 2f;
+//                    if (currentStep > halfSteps) {
+//                        currentStep = steps - currentStep;
+//                    }
+//                    fill(lerpColor(YELLOW, BLUE, currentStep / halfSteps));
+                default:
+                    setFill(currentStep, STEPS);
+            }
+
             int lineWidth = 30;
             float distX = cos(angleBetween) * lineWidth;
             float distY = sin(angleBetween) * lineWidth;
@@ -256,14 +267,9 @@ public class OrbitClock extends PApplet {
                 fill(255 * (currentStep / steps), 255);
                 break;
             case BLACK_ALPHA:
+            default:
                 fill(0, 255 * (1 - currentStep / steps));
                 break;
-            case YELLOW_BLUE:
-                float halfSteps = steps / 2f;
-                if (currentStep > halfSteps) {
-                    currentStep = steps - currentStep;
-                }
-                fill(lerpColor(YELLOW, BLUE, currentStep / halfSteps));
         }
     }
 
