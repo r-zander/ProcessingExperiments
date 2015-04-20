@@ -1,4 +1,4 @@
-package seminar05.Pong;
+package games.pong;
 
 import processing.core.PApplet;
 

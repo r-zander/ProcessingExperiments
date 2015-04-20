@@ -7,5 +7,22 @@
 			<attribute name="javadoc_location" value="http://processing.org/reference/javadoc/core/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/XieLong/Documents/Processing/libraries/opencv_processing/library/opencv_processing.jar" sourcepath="C:/Users/XieLong/Documents/Processing/libraries/opencv_processing/src"/>
+	<classpathentry kind="lib" path="C:/Users/XieLong/Documents/Processing/libraries/opencv_processing/library/opencv-245.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/processing-2.2.1/modes/java/libraries/video/library/video.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/processing-2.2.1/modes/java/libraries/video/library/gstreamer-java.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/processing-2.2.1/modes/java/libraries/video/library/jna.jar"/>
+	<classpathentry kind="lib" path="C:/Users/XieLong/Documents/Processing/libraries/peasycam/library/peasycam.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/processing-2.2.1/core/library/gluegen-rt.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Program Files/processing-2.2.1/core/library"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Program Files/processing-2.2.1/core/library/jogl-all.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Program Files/processing-2.2.1/core/library"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/XieLong/.m2/repository/org/projectlombok/lombok/0.12.0/lombok-0.12.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
