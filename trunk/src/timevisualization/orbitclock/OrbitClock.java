@@ -17,7 +17,7 @@ public class OrbitClock extends PApplet {
         YELLOW_BLUE;
     }
 
-    private static final ColorMode COLOR_MODE = ColorMode.YELLOW_BLUE;
+    private static final ColorMode COLOR_MODE = ColorMode.BLACK_ALPHA;
 
     private CurveFunction          function;
 
