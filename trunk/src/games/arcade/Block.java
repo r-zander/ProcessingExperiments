@@ -1,5 +1,6 @@
 package games.arcade;
 
+import games.arcade.ArcadeConstants.Colors;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -122,6 +123,10 @@ public class Block {
     }
 
     protected void draw() {
+        app.stroke(Colors.BLUE);
+        app.strokeWeight(2);
+        app.noFill();
+
         switch (shape()) {
             case RECTANGLE:
                 app.rect(x, y, width, height);
