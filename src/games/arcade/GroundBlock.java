@@ -7,7 +7,7 @@ public class GroundBlock extends Block {
     public GroundBlock(PApplet app) {
         super(app, Shape.RECTANGLE);
 
-        width(app.random(100, 300));
+        width(app.random(100, 1400));
         height(app.random(20, 200));
         positionOutside(Direction.RIGHT);
         positionInside(Direction.BOTTOM);

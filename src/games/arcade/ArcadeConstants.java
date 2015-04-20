@@ -6,7 +6,7 @@ public class ArcadeConstants {
 
     public static final float ASPECT_RATIO = 16f / 5f;
 
-    public static final float GRAVITY      = 9;
+    public static final float GRAVITY      = 3;
 
     public static class Colors {
 

@@ -1,7 +1,6 @@
 package games.arcade;
 
 import static games.arcade.ArcadeConstants.*;
-import games.arcade.ArcadeConstants.Colors;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,27 +22,56 @@ public class Arcarde extends PApplet {
 
     private Unit              unit;
 
+    private DeathScreen       deathScreen;
+
+    private GameScreen        screen;
+
     @Override
     public void setup() {
         size(displayWidth, round(displayWidth / ASPECT_RATIO));
         noCursor();
-        frameRate(1);
 
-        speed = 5;
         screenOrientation = Direction.BOTTOM;
 
         blocks.add(new GroundBlock(this).width(width - 100).height(50).positionInside(Corner.BOTTOM_LEFT));
 
         unit = new Unit(this);
+        deathScreen = new DeathScreen(this);
 
-        stroke(Colors.BLUE);
-        strokeWeight(2);
-        noFill();
+        setScreen(GameScreen.GAME);
+
         ellipseMode(CORNER);
+    }
+
+    private void setScreen(GameScreen newScreen) {
+        if (screen != newScreen) {
+            screen = newScreen;
+            switch (screen) {
+                case START:
+                    break;
+                case GAME:
+                    speed = 5;
+                    unit.resetPosition();
+                    break;
+                case DEATH:
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     @Override
     public void draw() {
+        switch (screen) {
+            case DEATH:
+                deathScreen.draw();
+                return;
+            case GAME:
+            default:
+                break;
+        }
+
         background(backgroundColor);
 
         for (Iterator<Block> iterator = blocks.iterator(); iterator.hasNext();) {
@@ -58,25 +86,33 @@ public class Arcarde extends PApplet {
             }
 
             float gap = width - block.right();
-            if (gap >= 200 && gap < (200 + speed)) {
+            float gapSize = 40 * speed;
+            if (gap >= gapSize && gap < (gapSize + speed)) {
                 blocks.add(new GroundBlock(this));
                 break;
             }
         }
 
-        unit.update(getGravityDirection(), blocks);
+        switch (unit.update(getGravityDirection(), blocks)) {
+            case DEAD:
+                setScreen(GameScreen.DEATH);
+                break;
+            default:
+                break;
+
+        }
+
+        speed += 0.01;
     }
 
     @Override
     public void keyPressed() {
         switch (key) {
             case ' ':
-                unit.jump(getGravityDirection());
+                jumpPressed();
                 break;
             case ESC:
-                /*
-                 * return to start screen
-                 */
+                setScreen(GameScreen.START);
                 break;
             case CODED:
                 switch (keyCode) {
@@ -93,13 +129,24 @@ public class Arcarde extends PApplet {
     public void mousePressed() {
         switch (mouseButton) {
             case LEFT:
-                unit.jump(getGravityDirection());
+                jumpPressed();
                 break;
             case RIGHT:
                 frameRate(1);
                 break;
             default:
                 break;
+        }
+    }
+
+    private void jumpPressed() {
+        switch (screen) {
+            case DEATH:
+                setScreen(GameScreen.GAME);
+                return;
+            case GAME:
+            default:
+                unit.jump(getGravityDirection());
         }
     }
 
@@ -119,6 +166,9 @@ public class Arcarde extends PApplet {
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[] { /* "--present", */"--location=-1920,700", Arcarde.class.getName() });
+//        PApplet.main(new String[] { "--present", Arcarde.class.getName() });
+//        PApplet.main(new String[] { "--location=-1920,700", Arcarde.class.getName() });
+//        PApplet.main(new String[] { "--location=1920,0", Arcarde.class.getName() });
+        PApplet.main(new String[] { Arcarde.class.getName() });
     }
 }
