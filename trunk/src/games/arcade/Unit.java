@@ -17,20 +17,18 @@ import processing.core.PConstants;
 public class Unit extends Block {
 
     @Setter(AccessLevel.NONE)
-    private State              state;
+    private State            state;
 
     /*
      * Number of frames the state is kept.
      */
-    private int                stateFrames;
+    private int              stateFrames;
 
-    private static final int   JUMP_FRAMES       = 17;
+    private static final int JUMP_FRAMES       = 20;
 
-    private static final float JUMP_ACCELERATION = 3;
+    private int              jumpStrength;
 
-    private int                jumpStrength;
-
-    private static final int   MAX_JUMP_STRENGTH = 8;
+    private static final int MAX_JUMP_STRENGTH = 15;
 
     public Unit(PApplet app) {
         super(app, Shape.ELLIPSE);
@@ -40,17 +38,22 @@ public class Unit extends Block {
     }
 
     public void resetPosition() {
+        state = State.AFTER_JUMP_FALLING;
         bottom(app().height - 300);
         left(150);
     }
 
-    public void jump(Direction gravityDirection) {
-        updateState(State.JUMPING);
-    }
-
-    public void enhanceJump() {
-        if (jumpStrength < MAX_JUMP_STRENGTH) {
-            jumpStrength++;
+    public void jump() {
+        System.out.println("jump");
+        if (state == State.JUMPING) {
+            if (jumpStrength < MAX_JUMP_STRENGTH) {
+                jumpStrength++;
+            }
+        } else if (state == State.AFTER_JUMP_FALLING) {
+            // NOP
+        } else {
+            updateState(State.JUMPING);
+            jumpStrength = 1;
         }
     }
 
@@ -65,9 +68,9 @@ public class Unit extends Block {
 
         if (state == State.JUMPING) {
             if (stateFrames > JUMP_FRAMES) {
-                return updateState(State.FALLING);
+                return updateState(State.AFTER_JUMP_FALLING);
             }
-            float mappedStrength = map(jumpStrength, 1, MAX_JUMP_STRENGTH, 1, 3);
+            float mappedStrength = map(jumpStrength, 4, MAX_JUMP_STRENGTH, 2, 6);
             System.out.println("Frame: " + stateFrames);
             System.out.println(jumpStrength + " : " + mappedStrength);
             offset(gravityDirection.invert(), mappedStrength * (-0.692f * stateFrames + 11.765f));
@@ -93,7 +96,9 @@ public class Unit extends Block {
         /*
          * No collisions - falling
          */
-        updateState(State.FALLING);
+        if (state != State.AFTER_JUMP_FALLING) {
+            updateState(State.FALLING);
+        }
         offset(gravityDirection, GRAVITY * stateFrames /* * stateFrames * stateFrames */);
 
         draw();
@@ -198,21 +203,13 @@ public class Unit extends Block {
         if (this.state != state) {
             this.state = state;
             stateFrames = 0;
-
-            switch (state) {
-                case JUMPING:
-                    jumpStrength = 1;
-                    break;
-
-                default:
-                    break;
-            }
         }
         return state;
     }
 
     public static enum State {
         JUMPING,
+        AFTER_JUMP_FALLING,
         FALLING,
         WALKING,
         DEAD;
