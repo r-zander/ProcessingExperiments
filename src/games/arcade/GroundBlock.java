@@ -15,12 +15,12 @@ public class GroundBlock extends Block {
     public GroundBlock(PApplet app, float speed) {
         super(app, Shape.RECTANGLE);
 
-        width(app.random(100, 1400));
+        width(app.random(50 + 10 * speed, 1400 + speed));
         height(app.random(20, 200));
         positionOutside(Direction.RIGHT);
         positionInside(Direction.BOTTOM);
 
-        gapSize = app.random(10, 40) * speed;
+        gapSize = app.random(10, 35) * speed;
     }
 
     @Override

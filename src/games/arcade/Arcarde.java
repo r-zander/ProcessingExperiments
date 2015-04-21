@@ -12,7 +12,7 @@ public class Arcarde extends PApplet {
 
     private static final long serialVersionUID = -56589606646834162L;
 
-    private float             speed;
+    private Figures           figures;
 
     private Direction         screenOrientation;
 
@@ -33,6 +33,7 @@ public class Arcarde extends PApplet {
 
         unit = new Unit(this);
         deathScreen = new DeathScreen(this);
+        figures = new Figures(this);
 
         setScreen(GameScreen.GAME);
 
@@ -46,10 +47,10 @@ public class Arcarde extends PApplet {
                 case START:
                     break;
                 case GAME:
-                    speed = 5;
+                    figures.reset();
                     unit.resetPosition();
                     blocks.clear();
-                    blocks.add(new GroundBlock(this, speed).width(width - 100).height(50)
+                    blocks.add(new GroundBlock(this, figures.speed()).width(width - 100).height(50)
                             .positionInside(Corner.BOTTOM_LEFT));
                     break;
                 case DEATH:
@@ -64,7 +65,7 @@ public class Arcarde extends PApplet {
     public void draw() {
         switch (screen) {
             case DEATH:
-                deathScreen.draw();
+                deathScreen.draw(figures);
                 return;
             case GAME:
             default:
@@ -76,7 +77,7 @@ public class Arcarde extends PApplet {
         for (Iterator<Block> iterator = blocks.iterator(); iterator.hasNext();) {
             Block block = iterator.next();
 
-            switch (block.move(speed, Direction.LEFT)) {
+            switch (block.move(figures.speed(), Direction.LEFT)) {
                 case OUTSIDE:
                     iterator.remove();
                     break;
@@ -89,7 +90,7 @@ public class Arcarde extends PApplet {
                 if (groundBlock.hasNextSpawned() == false) {
                     float gap = width - block.right();
                     if (gap >= groundBlock.gapSize()) {
-                        blocks.add(new GroundBlock(this, speed));
+                        blocks.add(new GroundBlock(this, figures.speed()));
                         groundBlock.hasNextSpawned(true);
                         break;
                     }
@@ -100,7 +101,7 @@ public class Arcarde extends PApplet {
         if (mousePressed) {
             switch (mouseButton) {
                 case LEFT:
-                    unit.enhanceJump();
+                    unit.jump();
                     break;
             }
         }
@@ -108,7 +109,7 @@ public class Arcarde extends PApplet {
         if (keyPressed) {
             switch (key) {
                 case ' ':
-                    unit.enhanceJump();
+                    unit.jump();
                     break;
             }
         }
@@ -119,20 +120,26 @@ public class Arcarde extends PApplet {
                 break;
             default:
                 break;
-
         }
 
-        speed += 0.01;
+        figures.draw();
+        figures.tick();
     }
 
     @Override
     public void keyPressed() {
         switch (key) {
             case ' ':
-                jumpPressed();
+                if (screen == GameScreen.DEATH) {
+                    setScreen(GameScreen.GAME);
+                }
                 break;
-            case ENTER:
-                setScreen(GameScreen.START);
+            case ESC:
+                if (screen != GameScreen.DEATH) {
+                    setScreen(GameScreen.DEATH);
+                    // Don't pass ESC through
+                    key = 0;
+                }
                 break;
             case CODED:
                 switch (keyCode) {
@@ -149,24 +156,15 @@ public class Arcarde extends PApplet {
     public void mousePressed() {
         switch (mouseButton) {
             case LEFT:
-                jumpPressed();
+                if (screen == GameScreen.DEATH) {
+                    setScreen(GameScreen.GAME);
+                }
                 break;
             case RIGHT:
                 frameRate(1);
                 break;
             default:
                 break;
-        }
-    }
-
-    private void jumpPressed() {
-        switch (screen) {
-            case DEATH:
-                setScreen(GameScreen.GAME);
-                return;
-            case GAME:
-            default:
-                unit.jump(getGravityDirection());
         }
     }
 
