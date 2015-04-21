@@ -12,7 +12,7 @@ public class CircleFlower extends PApplet {
 
     final static float ANGLE_OFFSET_SMALLER_CIRCLES   = (TWO_PI / NUMBER_OF_CIRCLES) / 2;
 
-    final static float SMALLER_CIRCLE_RELATIVE_RADIUS = .9f;
+    final static float SMALLER_CIRCLE_RELATIVE_RADIUS = 0.9f;
 
     float              centerX, centerY;
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PApplet;
+import util.TwoDimensional;
 
 public class ReflectedBall extends PApplet {
 
@@ -11,7 +12,7 @@ public class ReflectedBall extends PApplet {
 
     private static final int   BACKGROUND_COLOR = 0;
 
-    private int                radius           = 100;
+    private int                ballWidth        = 100;
 
     private static final float SPEED_BASE       = 15;
 
@@ -35,15 +36,11 @@ public class ReflectedBall extends PApplet {
 
         public void draw() {
             fill(hue, 255, 255);
-            ellipse(xPos, yPos, radius, radius);
+            ellipse(xPos, yPos, ballWidth, ballWidth);
         }
     }
 
     private List<Ball> balls = new ArrayList<Ball>();
-
-    private Ball       puck;
-
-    private int        blockCounter;
 
     @Override
     public boolean sketchFullScreen() {
@@ -70,33 +67,27 @@ public class ReflectedBall extends PApplet {
 
     @Override
     public void draw() {
-//        background(BACKGROUND_COLOR);
         fill(BACKGROUND_COLOR, 20);
         rect(0, 0, width, height);
 
-        if (mousePressed) {
-            Ball ball = new Ball();
-            ball.xPos = mouseX;
-            ball.yPos = mouseY;
-
-            balls.add(ball);
-        }
-
         // Draw mouse puck
         fill(255 - BACKGROUND_COLOR);
-        ellipse(mouseX, mouseY, radius, radius);
+        ellipse(mouseX, mouseY, ballWidth, ballWidth);
 
         for (Ball ball : balls) {
             ball.xPos += ball.xSpeed;
             ball.yPos += ball.ySpeed;
 
-            if (ball.xPos + radius / 2 < 0 || ball.xPos + radius / 2 > width) {
+            if (ball.xPos < ballWidth / 2 || ball.xPos > width - ballWidth / 2) {
                 ball.xSpeed = -ball.xSpeed;
-            } else if (ball.yPos + radius / 2 < 0 || ball.yPos + radius / 2 > height) {
+            } else if (ball.yPos < ballWidth / 2 || ball.yPos > height - ballWidth / 2) {
                 ball.ySpeed = -ball.ySpeed;
-            } else if (sqrt(sq(ball.xPos - mouseX) + sq(ball.yPos - mouseY)) <= radius) {
-                ball.xPos -= ball.xSpeed;
-                ball.yPos -= ball.ySpeed;
+            } else if (sqrt(sq(ball.xPos - mouseX) + sq(ball.yPos - mouseY)) <= ballWidth) {
+                // Push ball out of puck
+                float angle = TwoDimensional.angleBetween(ball.xPos, ball.yPos, mouseX, mouseY);
+                ball.xPos = mouseX + cos(angle) * ballWidth;
+                ball.yPos = mouseY + sin(angle) * ballWidth;
+
                 float random = random(3);
                 if (random <= 1) {
                     ball.xSpeed = -ball.xSpeed;
@@ -107,14 +98,24 @@ public class ReflectedBall extends PApplet {
                     ball.ySpeed = -ball.ySpeed;
                 }
                 fill(255 - BACKGROUND_COLOR);
-                ellipse(mouseX, mouseY, radius * 3, radius * 3);
+                ellipse(mouseX, mouseY, ballWidth * 3, ballWidth * 3);
             }
             ball.draw();
         }
+    }
 
-        if (keyPressed) {
-            balls.clear();
-        }
+    @Override
+    public void mousePressed() {
+        Ball ball = new Ball();
+        ball.xPos = mouseX;
+        ball.yPos = mouseY;
+
+        balls.add(ball);
+    }
+
+    @Override
+    public void keyPressed() {
+        balls.clear();
     }
 
     public static void main(String args[]) {
