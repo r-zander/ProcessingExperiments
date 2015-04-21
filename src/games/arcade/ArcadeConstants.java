@@ -10,7 +10,13 @@ public class ArcadeConstants {
 
     public static class Colors {
 
-        public static final int BLUE = 0xff18CAE6;
+        public static final float BACKGROUND = 5;
+
+        public static final int   BLUE       = 0xff18CAE6;
     }
+
+    public static final float MIN_JUMP_HEIGHT = 100;
+
+    public static final float MAX_JUMP_HEIGHT = 400;
 
 }

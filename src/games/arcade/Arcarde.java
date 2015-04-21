@@ -12,8 +12,6 @@ public class Arcarde extends PApplet {
 
     private static final long serialVersionUID = -56589606646834162L;
 
-    private float             backgroundColor  = 5;
-
     private float             speed;
 
     private Direction         screenOrientation;
@@ -33,8 +31,6 @@ public class Arcarde extends PApplet {
 
         screenOrientation = Direction.BOTTOM;
 
-        blocks.add(new GroundBlock(this).width(width - 100).height(50).positionInside(Corner.BOTTOM_LEFT));
-
         unit = new Unit(this);
         deathScreen = new DeathScreen(this);
 
@@ -52,6 +48,9 @@ public class Arcarde extends PApplet {
                 case GAME:
                     speed = 5;
                     unit.resetPosition();
+                    blocks.clear();
+                    blocks.add(new GroundBlock(this, speed).width(width - 100).height(50)
+                            .positionInside(Corner.BOTTOM_LEFT));
                     break;
                 case DEATH:
                     break;
@@ -72,7 +71,7 @@ public class Arcarde extends PApplet {
                 break;
         }
 
-        background(backgroundColor);
+        background(ArcadeConstants.Colors.BACKGROUND);
 
         for (Iterator<Block> iterator = blocks.iterator(); iterator.hasNext();) {
             Block block = iterator.next();
@@ -85,11 +84,32 @@ public class Arcarde extends PApplet {
                     break;
             }
 
-            float gap = width - block.right();
-            float gapSize = 40 * speed;
-            if (gap >= gapSize && gap < (gapSize + speed)) {
-                blocks.add(new GroundBlock(this));
-                break;
+            if (block instanceof GroundBlock) {
+                GroundBlock groundBlock = (GroundBlock) block;
+                if (groundBlock.hasNextSpawned() == false) {
+                    float gap = width - block.right();
+                    if (gap >= groundBlock.gapSize()) {
+                        blocks.add(new GroundBlock(this, speed));
+                        groundBlock.hasNextSpawned(true);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (mousePressed) {
+            switch (mouseButton) {
+                case LEFT:
+                    unit.enhanceJump();
+                    break;
+            }
+        }
+
+        if (keyPressed) {
+            switch (key) {
+                case ' ':
+                    unit.enhanceJump();
+                    break;
             }
         }
 
@@ -111,7 +131,7 @@ public class Arcarde extends PApplet {
             case ' ':
                 jumpPressed();
                 break;
-            case ESC:
+            case ENTER:
                 setScreen(GameScreen.START);
                 break;
             case CODED:

@@ -28,6 +28,10 @@ public class Unit extends Block {
 
     private static final float JUMP_ACCELERATION = 3;
 
+    private int                jumpStrength;
+
+    private static final int   MAX_JUMP_STRENGTH = 8;
+
     public Unit(PApplet app) {
         super(app, Shape.ELLIPSE);
 
@@ -44,6 +48,12 @@ public class Unit extends Block {
         updateState(State.JUMPING);
     }
 
+    public void enhanceJump() {
+        if (jumpStrength < MAX_JUMP_STRENGTH) {
+            jumpStrength++;
+        }
+    }
+
     public State update(Direction gravityDirection, List<Block> blocks) {
         stateFrames++;
         /*
@@ -57,8 +67,10 @@ public class Unit extends Block {
             if (stateFrames > JUMP_FRAMES) {
                 return updateState(State.FALLING);
             }
-
-            offset(gravityDirection.invert(), JUMP_ACCELERATION * (JUMP_FRAMES - stateFrames) - GRAVITY);
+            float mappedStrength = map(jumpStrength, 1, MAX_JUMP_STRENGTH, 1, 3);
+            System.out.println("Frame: " + stateFrames);
+            System.out.println(jumpStrength + " : " + mappedStrength);
+            offset(gravityDirection.invert(), mappedStrength * (-0.692f * stateFrames + 11.765f));
             draw();
             return state;
         }
@@ -186,6 +198,15 @@ public class Unit extends Block {
         if (this.state != state) {
             this.state = state;
             stateFrames = 0;
+
+            switch (state) {
+                case JUMPING:
+                    jumpStrength = 1;
+                    break;
+
+                default:
+                    break;
+            }
         }
         return state;
     }
