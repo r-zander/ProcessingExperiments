@@ -1,4 +1,4 @@
-package interactiveProjects.globeVisualization;
+package informationArchitecture.globeVisualization;
 
 import peasy.PeasyCam;
 import processing.core.PApplet;
