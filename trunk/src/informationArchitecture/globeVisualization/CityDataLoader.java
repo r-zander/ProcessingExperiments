@@ -1,4 +1,4 @@
-package interactiveProjects.globeVisualization;
+package informationArchitecture.globeVisualization;
 
 import processing.core.PApplet;
 

@@ -8,15 +8,13 @@ import java.util.List;
 
 import processing.core.PApplet;
 
-public class Arcarde extends PApplet {
-
-    private static final long serialVersionUID = -56589606646834162L;
+public class Arcade extends PApplet {
 
     private Figures           figures;
 
     private Direction         screenOrientation;
 
-    private final List<Block> blocks           = new LinkedList<>();
+    private final List<Block> blocks = new LinkedList<>();
 
     private Unit              unit;
 
@@ -79,6 +77,12 @@ public class Arcarde extends PApplet {
 
             switch (block.move(figures.speed(), Direction.LEFT)) {
                 case OUTSIDE:
+                    // If it's a ground block, only remove it when its successor already spawned
+                    if (block instanceof GroundBlock) {
+                        if (((GroundBlock) block).hasNextSpawned() == false) {
+                            break;
+                        }
+                    }
                     iterator.remove();
                     break;
                 default:
@@ -187,6 +191,6 @@ public class Arcarde extends PApplet {
 //        PApplet.main(new String[] { "--present", Arcarde.class.getName() });
 //        PApplet.main(new String[] { "--location=-1920,700", Arcarde.class.getName() });
 //        PApplet.main(new String[] { "--location=1920,0", Arcarde.class.getName() });
-        PApplet.main(new String[] { Arcarde.class.getName() });
+        PApplet.main(new String[] { Arcade.class.getName() });
     }
 }
