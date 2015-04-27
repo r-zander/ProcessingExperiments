@@ -54,7 +54,7 @@ public class Figures {
 
     public void reset() {
         distanceTraveled = 0;
-        speed = floor(speed);
+        speed = floor(speed / START_SPEED) * START_SPEED;
     }
 
 }
