@@ -6,21 +6,28 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import lombok.experimental.PackagePrivate;
 import processing.core.PApplet;
 
 public class Arcade extends PApplet {
 
-    private Figures           figures;
+    @PackagePrivate
+    Figures           figures;
 
-    private Direction         screenOrientation;
+    @PackagePrivate
+    Direction         screenOrientation;
 
-    private final List<Block> blocks = new LinkedList<>();
+    @PackagePrivate
+    final List<Block> blocks = new LinkedList<>();
 
-    private Unit              unit;
+    @PackagePrivate
+    Unit              unit;
 
-    private DeathScreen       deathScreen;
+    @PackagePrivate
+    Screens           screens;
 
-    private GameScreen        screen;
+    @PackagePrivate
+    AbstractScreen    screen;
 
     @Override
     public void setup() {
@@ -30,46 +37,29 @@ public class Arcade extends PApplet {
         screenOrientation = Direction.BOTTOM;
 
         unit = new Unit(this);
-        deathScreen = new DeathScreen(this);
         figures = new Figures(this);
 
-        setScreen(GameScreen.GAME);
+        screens = new Screens(this);
+
+        setScreen(screens.START);
 
         ellipseMode(CORNER);
     }
 
-    private void setScreen(GameScreen newScreen) {
+    private void setScreen(AbstractScreen newScreen) {
         if (screen != newScreen) {
             screen = newScreen;
-            switch (screen) {
-                case START:
-                    break;
-                case GAME:
-                    figures.reset();
-                    unit.resetPosition();
-                    blocks.clear();
-                    blocks.add(new GroundBlock(this, figures.speed()).width(width - 100).height(50)
-                            .positionInside(Corner.BOTTOM_LEFT));
-                    break;
-                case DEATH:
-                    break;
-                default:
-                    break;
-            }
+            screen.activate();
         }
     }
 
     @Override
     public void draw() {
-        switch (screen) {
-            case DEATH:
-                deathScreen.draw(figures);
-                return;
-            case GAME:
-            default:
-                break;
-        }
+        screen.draw();
+    }
 
+    @PackagePrivate
+    void drawGame() {
         background(ArcadeConstants.Colors.BACKGROUND);
 
         for (Iterator<Block> iterator = blocks.iterator(); iterator.hasNext();) {
@@ -120,7 +110,7 @@ public class Arcade extends PApplet {
 
         switch (unit.update(getGravityDirection(), blocks)) {
             case DEAD:
-                setScreen(GameScreen.DEATH);
+                setScreen(screens.DEATH);
                 break;
             default:
                 break;
@@ -134,13 +124,13 @@ public class Arcade extends PApplet {
     public void keyPressed() {
         switch (key) {
             case ' ':
-                if (screen == GameScreen.DEATH) {
-                    setScreen(GameScreen.GAME);
+                if (screen == screens.DEATH || screen == screens.START) {
+                    setScreen(screens.GAME);
                 }
                 break;
             case ESC:
-                if (screen != GameScreen.DEATH) {
-                    setScreen(GameScreen.DEATH);
+                if (screen != screens.DEATH) {
+                    setScreen(screens.DEATH);
                     // Don't pass ESC through
                     key = 0;
                 }
@@ -160,8 +150,8 @@ public class Arcade extends PApplet {
     public void mousePressed() {
         switch (mouseButton) {
             case LEFT:
-                if (screen == GameScreen.DEATH) {
-                    setScreen(GameScreen.GAME);
+                if (screen == screens.DEATH || screen == screens.START) {
+                    setScreen(screens.GAME);
                 }
                 break;
             case RIGHT:
@@ -185,6 +175,14 @@ public class Arcade extends PApplet {
 
     private Direction getGravityDirection() {
         return screenOrientation;
+    }
+
+    public float percentageWidth(float percentage) {
+        return percentage / 100 * width;
+    }
+
+    public float percentageHeight(float percentage) {
+        return percentage / 100 * height;
     }
 
     public static void main(String args[]) {

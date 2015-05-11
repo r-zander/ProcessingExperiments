@@ -34,7 +34,7 @@ public class Unit extends Block {
     }
 
     public void resetPosition() {
-        state = State.FALLING;
+        updateState(State.FALLING);
         bottom(app().height - 300);
         left(150);
     }
