@@ -13,7 +13,7 @@ public class Numbers {
     }
 
     public static int random(int low, int high) {
-        return (int) (Math.random() * (high - low) + low);
+        return (int) (Math.random() * (high - low) + low + 0.5);
     }
 
 }
