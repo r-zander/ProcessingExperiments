@@ -25,7 +25,7 @@ public class NoisePainter extends PApplet {
 //        strokeWeight(max(map(mouseDist, 0, 150, 40, 3), 0));
         strokeWeight(noise(frameCount * 0.1f) * 40);
         line(pmouseX, pmouseY, mouseX, mouseY);
-        color += noise(frameCount * 0.1f) * 10 - 5;
+        color += noise(frameCount * 0.1f) * 10 - 4;
 
         color %= 256;
     }
