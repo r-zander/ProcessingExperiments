@@ -22,7 +22,24 @@
 	</classpathentry>
 	<classpathentry kind="var" path="PROCESSING_LIBRARIES/opencv_processing/library/opencv_processing.jar"/>
 	<classpathentry kind="var" path="PROCESSING_LIBRARIES/opencv_processing/library/opencv-245.jar"/>
-	<classpathentry kind="var" path="PROCESSING_LIBRARIES/peasycam/library/peasycam.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/peasycam/library/peasycam.jar" sourcepath="/PROCESSING_LIBRARIES/peasycam/src"/>
 	<classpathentry kind="var" path="M2_REPO/org/projectlombok/lombok/0.12.0/lombok-0.12.0.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/punktiert/library/punktiert.jar" sourcepath="/PROCESSING_LIBRARIES/punktiert/src"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/beads.jar" sourcepath="/PROCESSING_LIBRARIES/beads_processing/beads/src/beads_main/net/beadsproject"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/jarjar-1.0.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/jl1.0.1.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/jna.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/mp3spi1.9.4.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/org-jaudiolibs-audioservers-jack.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/org-jaudiolibs-audioservers-javasound.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/org-jaudiolibs-audioservers.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/org-jaudiolibs-jnajack.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/tools.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/tritonus_aos-0.3.6.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/beads_processing/beads/library/tritonus_share.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/twitter4j/lib/twitter4j-async-4.0.3.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/twitter4j/lib/twitter4j-core-4.0.3.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/twitter4j/lib/twitter4j-media-support-4.0.3.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/twitter4j/lib/twitter4j-stream-4.0.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
