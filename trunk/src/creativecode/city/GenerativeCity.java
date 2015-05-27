@@ -1,10 +1,9 @@
 package creativecode.city;
 
 import java.awt.geom.Ellipse2D;
-import java.util.ArrayList;
-import java.util.List;
 
 import processing.core.PApplet;
+import creativecode.city.Grid.CellState;
 
 public class GenerativeCity extends PApplet {
 
@@ -21,7 +20,7 @@ public class GenerativeCity extends PApplet {
 
     float       buildPadding = 3;
 
-    Grid        grid         = new Grid();
+    Grid        grid;
 
     Interaction currentInteraction;
 
@@ -32,21 +31,26 @@ public class GenerativeCity extends PApplet {
 
         frameRate(60);
         background(0);
-        grid.draw();
+
+        grid = new Grid();
     }
 
     @Override
     public void draw() {
 
         if (mousePressed) {
+            if (currentInteraction == null) {
+                currentInteraction = new Interaction();
+            } else {
+                currentInteraction.update();
+            }
+
             switch (mouseButton) {
                 case LEFT:
-                    if (currentInteraction == null) {
-                        currentInteraction = new Interaction(mouseX, mouseY);
-                    } else {
-                        currentInteraction.update(mouseX, mouseY);
-                    }
-                    drawBuildings();
+                    changeGrid(Grid.CellState.BUILT);
+                    break;
+                case RIGHT:
+                    changeGrid(Grid.CellState.EMPTY);
                     break;
                 default:
                     break;
@@ -54,35 +58,47 @@ public class GenerativeCity extends PApplet {
         }
     }
 
-    private void drawBuildings() {
+    private void changeGrid(CellState newState) {
 
         int intensity = currentInteraction.frames;
         float buildDiameter = intensity * grid.cellDimension;
-        stroke(0xffffff00);
-        noFill();
-        ellipse(mouseX, mouseY, buildDiameter, buildDiameter);
+//        stroke(0xffffff00);
+//        noFill();
+//        ellipse(mouseX, mouseY, buildDiameter, buildDiameter);
 
-        Ellipse2D.Float ellipse = new Ellipse2D.Float(mouseX, mouseY, buildDiameter, buildDiameter);
+        Ellipse2D.Float ellipse =
+                new Ellipse2D.Float(
+                        mouseX - buildDiameter / 2,
+                        mouseY - buildDiameter / 2,
+                        buildDiameter,
+                        buildDiameter);
 
-        List<Integer> xs = new ArrayList<Integer>();
-        for (int gridX = currentInteraction.gridX - intensity / 2; gridX < currentInteraction.gridX + intensity / 2; gridX++) {
-            xs.add(gridX);
-            for (int gridY = currentInteraction.gridY - intensity / 2; gridY < currentInteraction.gridY + intensity / 2; gridY++) {
+        int half_intensity = intensity / 2; // automatically rounded down
+        for (int gridX = currentInteraction.gridX - half_intensity; gridX < currentInteraction.gridX + half_intensity; gridX++) {
+            if (gridX < 0) {
+                continue;
+            }
+            if (gridX >= grid.getMaxGridX()) {
+                break;
+            }
+            for (int gridY = currentInteraction.gridY - half_intensity; gridY < currentInteraction.gridY
+                    + half_intensity; gridY++) {
+                if (gridY < 0) {
+                    continue;
+                }
+                if (gridY >= grid.getMaxGridY()) {
+                    break;
+                }
+                if (grid.isState(gridX, gridY, newState)) {
+                    continue;
+                }
                 float x = grid.getX(gridX);
                 float y = grid.getY(gridY);
                 if (ellipse.contains(x + grid.cellDimension / 2, y + grid.cellDimension / 2)) {
-                    grid.replaceCell(gridX, gridY);
-                    new Building(
-                            x + buildPadding,
-                            y + buildPadding,
-                            grid.cellDimension - buildPadding * 2,
-                            grid.cellDimension - buildPadding * 2).draw();
+                    grid.changeState(gridX, gridY, newState);
                 }
             }
         }
-
-//        println("Cell: " + currentInteraction.gridX + " Intensity: " + intensity + " (Cells: " + xs + ")");
-
     }
 
     @Override
@@ -100,19 +116,23 @@ public class GenerativeCity extends PApplet {
 
         int gridY;
 
-        public Interaction(float mouseX, float mouseY) {
+        int currentMouseButton;
+
+        public Interaction() {
             gridX = grid.getGridX(mouseX);
             gridY = grid.getGridY(mouseY);
+            currentMouseButton = mouseButton;
         }
 
-        void update(float mouseX, float mouseY) {
+        void update() {
             int newGridX = grid.getGridX(mouseX);
             int newGridY = grid.getGridY(mouseY);
 
-            if (newGridX != gridX || newGridY != gridY) {
+            if (newGridX != gridX || newGridY != gridY || currentMouseButton != mouseButton) {
                 frames = 1;
                 gridX = newGridX;
                 gridY = newGridY;
+                currentMouseButton = mouseButton;
             } else {
                 frames++;
             }
@@ -120,6 +140,6 @@ public class GenerativeCity extends PApplet {
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[] {/* "--present", */GenerativeCity.class.getName() });
+        PApplet.main(new String[] { "--present", GenerativeCity.class.getName() });
     }
 }
