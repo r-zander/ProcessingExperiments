@@ -62,9 +62,6 @@ public class GenerativeCity extends PApplet {
 
         int intensity = currentInteraction.frames;
         float buildDiameter = intensity * grid.cellDimension;
-//        stroke(0xffffff00);
-//        noFill();
-//        ellipse(mouseX, mouseY, buildDiameter, buildDiameter);
 
         Ellipse2D.Float ellipse =
                 new Ellipse2D.Float(
@@ -128,11 +125,19 @@ public class GenerativeCity extends PApplet {
             int newGridX = grid.getGridX(mouseX);
             int newGridY = grid.getGridY(mouseY);
 
-            if (newGridX != gridX || newGridY != gridY || currentMouseButton != mouseButton) {
-                frames = 1;
+            if (currentMouseButton != mouseButton) {
                 gridX = newGridX;
                 gridY = newGridY;
+                frames = 1;
                 currentMouseButton = mouseButton;
+            } else if (newGridX != gridX || newGridY != gridY) {
+                float frameChange = sqrt(sq(newGridX - gridX) + sq(newGridY - gridY));
+                frames -= round(frameChange);
+                if (frames <= 0) {
+                    frames = 1;
+                }
+                gridX = newGridX;
+                gridY = newGridY;
             } else {
                 frames++;
             }

@@ -1,9 +1,7 @@
 package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
-import static processing.core.PConstants.*;
 import processing.core.PShape;
-import util.Numbers;
 
 public class Building {
 
@@ -22,30 +20,10 @@ public class Building {
         $.fill(BACKGROUND);
         $.stroke(STROKE);
         $.strokeWeight(1);
-        shape = createShape(width, height);
+        shape = BuildingShapeFactory.newShape(width, height);
     }
 
     void draw() {
         $.shape(shape, x, y);
-    }
-
-    PShape createShape(float width, float height) {
-        switch (Numbers.random(1, 2)) {
-            case 1:
-                PShape shape = $.createShape();
-                shape.beginShape();
-                shape.vertex(0, 0);
-                shape.vertex(width, 0);
-                shape.vertex(width, height);
-                float notchWidth = width * $.random(0.1f, 0.7f);
-                shape.vertex(notchWidth, height);
-                float notchHeight = height * $.random(0.3f, 0.9f);
-                shape.vertex(notchWidth, notchHeight);
-                shape.vertex(0, notchHeight);
-                shape.endShape(CLOSE);
-                return shape;
-            default:
-                return $.createShape(RECT, 0, 0, width, height);
-        }
     }
 }
