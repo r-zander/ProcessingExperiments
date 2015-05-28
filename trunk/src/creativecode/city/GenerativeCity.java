@@ -4,6 +4,8 @@ import java.awt.geom.Ellipse2D;
 
 import processing.core.PApplet;
 import creativecode.city.Grid.CellState;
+import fisica.FWorld;
+import fisica.Fisica;
 
 public class GenerativeCity extends PApplet {
 
@@ -24,20 +26,23 @@ public class GenerativeCity extends PApplet {
 
     Interaction currentInteraction;
 
+    FWorld      world;
+
     @Override
     public void setup() {
         $ = this;
         size(displayWidth, displayHeight, P2D);
-
         frameRate(60);
         background(0);
+
+        Fisica.init(this);
+        world = new FWorld();
 
         grid = new Grid();
     }
 
     @Override
     public void draw() {
-
         if (mousePressed) {
             if (currentInteraction == null) {
                 currentInteraction = new Interaction();
@@ -56,6 +61,9 @@ public class GenerativeCity extends PApplet {
                     break;
             }
         }
+
+        world.draw();
+        world.step();
     }
 
     private void changeGrid(CellState newState) {
@@ -95,13 +103,6 @@ public class GenerativeCity extends PApplet {
                     grid.changeState(gridX, gridY, newState);
                 }
             }
-        }
-    }
-
-    @Override
-    public void keyPressed() {
-        if (key == ' ') {
-            noLoop();
         }
     }
 

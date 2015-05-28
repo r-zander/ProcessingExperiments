@@ -2,8 +2,11 @@ package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
 import processing.core.PShape;
+import fisica.FBox;
 
 public class Building {
+
+    FBox             box;
 
     PShape           shape;
 
@@ -21,6 +24,11 @@ public class Building {
         $.stroke(STROKE);
         $.strokeWeight(1);
         shape = BuildingShapeFactory.newShape(width, height);
+
+        box = new FBox(width, height);
+        box.setDrawable(false);
+
+        $.world.add(box);
     }
 
     void draw() {
