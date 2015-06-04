@@ -1,7 +1,12 @@
 package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import creativecode.city.GenerativeCity.Colors;
+import creativecode.city.GridCell.CellState;
 
 public class Grid {
 
@@ -11,17 +16,18 @@ public class Grid {
 
     float              cellDimension = 20;
 
-    CellState[][]      cells;
+    GridCell[][]       cellGrid;
+
+    List<GridCell>     cells;
+
+//    FConstantVolumeJoint volumeJoint;
 
     public Grid() {
-        cells = new CellState[(int) ($.width / cellDimension)][(int) ($.height / cellDimension)];
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                cells[i][j] = CellState.EMPTY;
-            }
-        }
+        cellGrid = new GridCell[(int) ($.width / cellDimension)][(int) ($.height / cellDimension)];
+        cells = new ArrayList<GridCell>();
 
-        draw();
+//        volumeJoint = new FConstantVolumeJoint();
+//        $.world.add(volumeJoint);
     }
 
     void draw() {
@@ -34,6 +40,16 @@ public class Grid {
 
         for (float y = cellDimension; y < $.height; y += cellDimension) {
             $.line(0, y, $.width, y);
+        }
+
+        for (GridCell cell : cells) {
+            if (cell.building != null) {
+                $.stroke(Colors.BACKGROUND);
+                $.strokeWeight(WEIGHT);
+                $.fill(GenerativeCity.Colors.BACKGROUND);
+                $.rect(cell.x, cell.y, cellDimension, cellDimension);
+                cell.building.draw();
+            }
         }
     }
 
@@ -54,7 +70,11 @@ public class Grid {
     }
 
     boolean isState(int gridX, int gridY, CellState state) {
-        return cells[gridX][gridY] == state;
+        GridCell cell = cellGrid[gridX][gridY];
+        if (cell == null) {
+            return state == CellState.EMPTY;
+        }
+        return state == cell.state;
     }
 
     void changeState(int gridX, int gridY, CellState newState) {
@@ -63,37 +83,52 @@ public class Grid {
 
         switch (newState) {
             case BUILT:
-                $.stroke(Colors.BACKGROUND);
-                $.strokeWeight(WEIGHT);
-                $.fill(GenerativeCity.Colors.BACKGROUND);
-                $.rect(x, y, cellDimension, cellDimension);
+//                $.stroke(Colors.BACKGROUND);
+//                $.strokeWeight(WEIGHT);
+//                $.fill(GenerativeCity.Colors.BACKGROUND);
+//                $.rect(x, y, cellDimension, cellDimension);
 
-                new Building(x + $.buildPadding, y + $.buildPadding, cellDimension - $.buildPadding * 2, cellDimension
-                        - $.buildPadding * 2).draw();
-
+                cellGrid[gridX][gridY] = new GridCell(newState);
+                cellGrid[gridX][gridY].x = x;
+                cellGrid[gridX][gridY].y = y;
+                cellGrid[gridX][gridY].building =
+                        new Building(
+                                x + $.buildPadding,
+                                y + $.buildPadding,
+                                cellDimension - $.buildPadding * 2,
+                                cellDimension - $.buildPadding * 2);
+//                cellGrid[gridX][gridY].building.volumeJoint = volumeJoint;
+                cells.add(cellGrid[gridX][gridY]);
+//                building.draw();
                 break;
             case EMPTY:
-                $.stroke(COLOR);
-                $.strokeWeight(WEIGHT);
-                $.fill(GenerativeCity.Colors.BACKGROUND);
-                $.rect(x, y, cellDimension, cellDimension);
+//                $.stroke(COLOR);
+//                $.strokeWeight(WEIGHT);
+//                $.fill(GenerativeCity.Colors.BACKGROUND);
+//                $.rect(x, y, cellDimension, cellDimension);
+                if (cellGrid[gridX][gridY] != null) {
+                    cells.remove(cellGrid[gridX][gridY]);
+                    cellGrid[gridX][gridY] = null;
+                }
                 break;
             default:
         }
 
-        cells[gridX][gridY] = newState;
-    }
-
-    enum CellState {
-        EMPTY,
-        BUILT;
     }
 
     public int getMaxGridX() {
-        return cells.length;
+        return cellGrid.length;
     }
 
     public int getMaxGridY() {
-        return cells[0].length;
+        return cellGrid[0].length;
+    }
+
+    public void step() {
+        for (GridCell cell : cells) {
+            if (cell.building != null) {
+                cell.building.step();
+            }
+        }
     }
 }

@@ -3,7 +3,7 @@ package creativecode.city;
 import java.awt.geom.Ellipse2D;
 
 import processing.core.PApplet;
-import creativecode.city.Grid.CellState;
+import creativecode.city.GridCell.CellState;
 import fisica.FWorld;
 import fisica.Fisica;
 
@@ -33,16 +33,18 @@ public class GenerativeCity extends PApplet {
         $ = this;
         size(displayWidth, displayHeight, P2D);
         frameRate(60);
-        background(0);
 
         Fisica.init(this);
         world = new FWorld();
+        world.setGravity(0, 0);
 
         grid = new Grid();
     }
 
     @Override
     public void draw() {
+        background(Colors.BACKGROUND);
+
         if (mousePressed) {
             if (currentInteraction == null) {
                 currentInteraction = new Interaction();
@@ -52,18 +54,30 @@ public class GenerativeCity extends PApplet {
 
             switch (mouseButton) {
                 case LEFT:
-                    changeGrid(Grid.CellState.BUILT);
+                    changeGrid(CellState.BUILT);
                     break;
                 case RIGHT:
-                    changeGrid(Grid.CellState.EMPTY);
+                    changeGrid(CellState.EMPTY);
                     break;
                 default:
                     break;
             }
         }
 
+        grid.draw();
+        grid.step();
+
         world.draw();
         world.step();
+
+        drawFPS();
+    }
+
+    void drawFPS() {
+        fill(Car.COLOR);
+        textSize(12);
+        textAlign(CENTER, BOTTOM);
+        text(frameRate, 50, 50);
     }
 
     private void changeGrid(CellState newState) {
