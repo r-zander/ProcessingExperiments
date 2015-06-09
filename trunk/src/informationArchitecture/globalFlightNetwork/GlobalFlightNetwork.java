@@ -12,7 +12,7 @@ public class GlobalFlightNetwork extends PApplet {
 
     Table             flightsTable;
 
-    Map<String, City> cities    = new TreeMap<>();
+    Map<String, City> cities    = new TreeMap<String, City>();
 
     int               dimension;
 

@@ -5,7 +5,6 @@ import static creativecode.city.GenerativeCity.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import creativecode.city.GenerativeCity.Colors;
 import creativecode.city.GridCell.CellState;
 
 public class Grid {
@@ -14,7 +13,7 @@ public class Grid {
 
     final static float WEIGHT        = 1;
 
-    float              cellDimension = 20;
+    final static float cellDimension = 20;
 
     GridCell[][]       cellGrid;
 
@@ -43,13 +42,7 @@ public class Grid {
         }
 
         for (GridCell cell : cells) {
-            if (cell.building != null) {
-                $.stroke(Colors.BACKGROUND);
-                $.strokeWeight(WEIGHT);
-                $.fill(GenerativeCity.Colors.BACKGROUND);
-                $.rect(cell.x, cell.y, cellDimension, cellDimension);
-                cell.building.draw();
-            }
+            cell.draw();
         }
     }
 
@@ -126,9 +119,7 @@ public class Grid {
 
     public void step() {
         for (GridCell cell : cells) {
-            if (cell.building != null) {
-                cell.building.step();
-            }
+            cell.step();
         }
     }
 }

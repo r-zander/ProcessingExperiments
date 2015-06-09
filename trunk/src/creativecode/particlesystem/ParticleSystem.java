@@ -16,7 +16,7 @@ public class ParticleSystem {
     public ParticleSystem(PApplet app, PVector location) {
         this.app = app;
         emitter = location.get();
-        particles = new ArrayList<>();
+        particles = new ArrayList<Particle>();
     }
 
     public void addParticle() {

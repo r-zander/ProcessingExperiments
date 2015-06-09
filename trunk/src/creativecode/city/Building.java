@@ -1,17 +1,19 @@
 package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
+import static processing.core.PApplet.*;
+import static processing.core.PConstants.*;
 import processing.core.PShape;
-import fisica.FBox;
-import fisica.FRevoluteJoint;
+import punktiert.math.Vec;
+import punktiert.physics.BSeparate;
+import punktiert.physics.VParticle;
+import punktiert.physics.VSpring;
 
 public class Building {
 
-    FBox             box;
+    VParticle        particle;
 
     PShape           shape;
-
-    float            x, y;
 
     final static int BACKGROUND = 0x5E232BFF;
 
@@ -19,44 +21,39 @@ public class Building {
 
     int              steps;
 
-//    FConstantVolumeJoint volumeJoint;
-
     public Building(float x, float y, float width, float height) {
-        this.x = x;
-        this.y = y;
-
         $.fill(BACKGROUND);
         $.stroke(STROKE);
         $.strokeWeight(1);
         shape = BuildingShapeFactory.newShape(width, height);
 
-        box = new FBox(width, height);
-        box.setDrawable(false);
-
-        $.world.add(box);
-
+        particle = new VParticle(new Vec(x + width / 2, y + height / 2), 0, max(width, height) / 2);
+//        particle.addBehavior(new BCollision());
+        particle.addBehavior(new BSeparate(particle.radius));
+        $.physics.addParticle(particle);
         spawnCar();
     }
 
     void draw() {
-        $.shape(shape, x, y);
+//        $.shape(shape, particle.x, particle.y);
+        $.ellipseMode(RADIUS);
+        $.fill(BACKGROUND);
+        $.stroke(STROKE);
+        $.strokeWeight(1);
+        $.ellipse(particle.x, particle.y, particle.radius, particle.radius);
     }
 
-//    public void step() {
+    public void step() {
 //        steps++;
 //        if (steps % 60 == 0) {
 //            spawnCar();
 //        }
-//    }
+    }
 
     private void spawnCar() {
-        Car car = new Car(x, y);
+        Car car = new Car(particle.x, particle.y);
+        $.cars.add(car);
 
-        FRevoluteJoint j = new FRevoluteJoint(box, car.circle);
-        j.setEnableMotor(true);
-        j.setMotorSpeed(100);
-        j.setMaxMotorTorque(0);
-        j.setAnchor(x, y);
-        $.world.add(j);
+        $.physics.addSpring(new VSpring(car.particle, particle, 100, 0.0005f));
     }
 }
