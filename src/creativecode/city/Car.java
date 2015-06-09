@@ -1,7 +1,11 @@
 package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
-import fisica.FCircle;
+import static processing.core.PConstants.*;
+import punktiert.math.Vec;
+import punktiert.physics.BCollision;
+import punktiert.physics.BWander;
+import punktiert.physics.VParticle;
 
 public class Car {
 
@@ -9,25 +13,26 @@ public class Car {
 
     static final float DIAMETER = 5;
 
-    FCircle            circle;
+    VParticle          particle;
 
     Car(float x, float y) {
-        circle = new FCircle(DIAMETER);
-        circle.setPosition(x, y);
-        circle.setRestitution(0);
-        circle.setFriction(0);
-        circle.setDamping(0);
-        circle.setAngularDamping(0);
+        particle = new VParticle(new Vec(x - DIAMETER, y - DIAMETER), 1, DIAMETER / 2);
+//        particle.add(new Vec(-particle.radius * 8, -particle.radius * 8));
+        particle.addBehavior(new BCollision(-0.5f));
+        BWander wander = new BWander(1, 1, 1);
+        wander.setChange(TWO_PI);
+        particle.addBehavior(wander);
+//        particle.addVelocity(new Vec($.random(-5, 5), $.random(-5, 5)));
+//        particle.setVelocity(new Vec($.random(-5, 5), $.random(-5, 5)));
+//        particle.addBehavior(new BSeparate(particle.radius));
 
-        circle.setFillColor(COLOR);
-        circle.setNoStroke();
+        $.physics.addParticle(particle);
+    }
 
-//        circle.addForce($.random(200), $.random(200));
-//        circle.addImpulse($.random(100), $.random(100));
-//        circle.addTorque($.random(-20000, 20000));
-        circle.setVelocity($.random(100), $.random(100));
-
-        $.world.add(circle);
-
+    public void draw() {
+        $.ellipseMode(RADIUS);
+        $.noStroke();
+        $.fill(COLOR);
+        $.ellipse(particle.x, particle.y, particle.radius, particle.radius);
     }
 }

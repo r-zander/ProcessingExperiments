@@ -1,11 +1,13 @@
 package creativecode.city;
 
 import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import processing.core.PApplet;
+import punktiert.math.Vec;
+import punktiert.physics.VPhysics;
 import creativecode.city.GridCell.CellState;
-import fisica.FWorld;
-import fisica.Fisica;
 
 public class GenerativeCity extends PApplet {
 
@@ -20,23 +22,22 @@ public class GenerativeCity extends PApplet {
 
     }
 
+    VPhysics    physics;
+
+    Interaction currentInteraction;
+
     float       buildPadding = 3;
 
     Grid        grid;
 
-    Interaction currentInteraction;
-
-    FWorld      world;
+    List<Car>   cars         = new ArrayList<Car>();
 
     @Override
     public void setup() {
         $ = this;
         size(displayWidth, displayHeight, P2D);
-        frameRate(60);
 
-        Fisica.init(this);
-        world = new FWorld();
-        world.setGravity(0, 0);
+        physics = new VPhysics(new Vec(), new Vec(width, height), false);
 
         grid = new Grid();
     }
@@ -44,6 +45,8 @@ public class GenerativeCity extends PApplet {
     @Override
     public void draw() {
         background(Colors.BACKGROUND);
+
+        physics.update();
 
         if (mousePressed) {
             if (currentInteraction == null) {
@@ -65,10 +68,12 @@ public class GenerativeCity extends PApplet {
         }
 
         grid.draw();
-        grid.step();
 
-        world.draw();
-        world.step();
+        for (Car car : cars) {
+            car.draw();
+        }
+
+        grid.step();
 
         drawFPS();
     }
@@ -83,6 +88,7 @@ public class GenerativeCity extends PApplet {
     private void changeGrid(CellState newState) {
 
         int intensity = currentInteraction.frames;
+
         float buildDiameter = intensity * grid.cellDimension;
 
         Ellipse2D.Float ellipse =
@@ -93,14 +99,14 @@ public class GenerativeCity extends PApplet {
                         buildDiameter);
 
         int half_intensity = intensity / 2; // automatically rounded down
-        for (int gridX = currentInteraction.gridX - half_intensity; gridX < currentInteraction.gridX + half_intensity; gridX++) {
+        for (int gridX = currentInteraction.gridX - half_intensity; gridX <= currentInteraction.gridX + half_intensity; gridX++) {
             if (gridX < 0) {
                 continue;
             }
             if (gridX >= grid.getMaxGridX()) {
                 break;
             }
-            for (int gridY = currentInteraction.gridY - half_intensity; gridY < currentInteraction.gridY
+            for (int gridY = currentInteraction.gridY - half_intensity; gridY <= currentInteraction.gridY
                     + half_intensity; gridY++) {
                 if (gridY < 0) {
                     continue;
