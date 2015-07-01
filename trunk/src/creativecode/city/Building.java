@@ -2,12 +2,10 @@ package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
 import static processing.core.PApplet.*;
-import static processing.core.PConstants.*;
 import processing.core.PShape;
 import punktiert.math.Vec;
-import punktiert.physics.BSeparate;
+import punktiert.physics.BCollision;
 import punktiert.physics.VParticle;
-import punktiert.physics.VSpring;
 
 public class Building {
 
@@ -28,19 +26,19 @@ public class Building {
         shape = BuildingShapeFactory.newShape(width, height);
 
         particle = new VParticle(new Vec(x + width / 2, y + height / 2), 0, max(width, height) / 2);
-//        particle.addBehavior(new BCollision());
-        particle.addBehavior(new BSeparate(particle.radius));
+        particle.addBehavior(new BCollision());
+//        particle.addBehavior(new BSeparate(particle.radius));
         $.physics.addParticle(particle);
         spawnCar();
     }
 
     void draw() {
-//        $.shape(shape, particle.x, particle.y);
-        $.ellipseMode(RADIUS);
-        $.fill(BACKGROUND);
-        $.stroke(STROKE);
-        $.strokeWeight(1);
-        $.ellipse(particle.x, particle.y, particle.radius, particle.radius);
+        $.shape(shape, particle.x - particle.radius, particle.y - particle.radius);
+//        $.ellipseMode(RADIUS);
+//        $.fill(BACKGROUND);
+//        $.stroke(STROKE);
+//        $.strokeWeight(1);
+//        $.ellipse(particle.x, particle.y, particle.radius, particle.radius);
     }
 
     public void step() {
@@ -54,6 +52,6 @@ public class Building {
         Car car = new Car(particle.x, particle.y);
         $.cars.add(car);
 
-        $.physics.addSpring(new VSpring(car.particle, particle, 100, 0.0005f));
+//        $.physics.addSpring(new VSpring(car.particle, particle, 100, 0.0005f));
     }
 }

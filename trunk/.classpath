@@ -44,5 +44,7 @@
 	<classpathentry kind="var" path="PROCESSING_LIBRARIES/Path_Finder/library/Path_Finder.jar" sourcepath="/PROCESSING_LIBRARIES/Path_Finder/src"/>
 	<classpathentry kind="var" path="PROCESSING_LIBRARIES/fisica/library/fisica.jar" sourcepath="/PROCESSING_LIBRARIES/fisica/src"/>
 	<classpathentry kind="var" path="PROCESSING_LIBRARIES/fisica/library/JBox2D-2.0.1-b250-Library.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/hermes/library/guava-r09.jar"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/hermes/library/javaosc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
