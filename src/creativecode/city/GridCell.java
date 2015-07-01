@@ -1,27 +1,37 @@
 package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+import pathfinder.GraphNode;
 import creativecode.city.GenerativeCity.Colors;
 
 public class GridCell {
 
-    CellState state;
-
-    Building  building;
-
-    float     x, y;
-
-    public GridCell() {
-        this(CellState.EMPTY);
-    }
-
-    public GridCell(CellState state) {
-        this.state = state;
-    }
-
     enum CellState {
         EMPTY,
         BUILT;
+    }
+
+    private static final AtomicInteger SEQUENCER = new AtomicInteger(1);
+
+    final int                          nodeId;
+
+    CellState                          state;
+
+    Building                           building;
+
+    final float                        x, y;
+
+    final GraphNode                    graphNode;
+
+    public GridCell(float x, float y) {
+        this.state = CellState.EMPTY;
+        this.x = x;
+        this.y = y;
+        this.nodeId = SEQUENCER.getAndIncrement();
+        this.graphNode = new GraphNode(nodeId, x, y);
     }
 
     public void step() {

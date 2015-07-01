@@ -16,14 +16,15 @@ public class Car {
     VParticle          particle;
 
     Car(float x, float y) {
-        particle = new VParticle(new Vec(x - DIAMETER, y - DIAMETER), 1, DIAMETER / 2);
+        particle = new VParticle(new Vec(x - DIAMETER, y - DIAMETER), 5, DIAMETER / 2);
 //        particle.add(new Vec(-particle.radius * 8, -particle.radius * 8));
-        particle.addBehavior(new BCollision(-0.5f));
-        BWander wander = new BWander(1, 1, 1);
-        wander.setChange(TWO_PI);
+        particle.addBehavior(new BCollision());
+//        particle.addBehavior(new BCarSpeed());
+        BWander wander = new BWander(1, 100, 1);
+//        wander.setChange(TWO_PI);
         particle.addBehavior(wander);
 //        particle.addVelocity(new Vec($.random(-5, 5), $.random(-5, 5)));
-//        particle.setVelocity(new Vec($.random(-5, 5), $.random(-5, 5)));
+//        particle.setVelocity(new Vec($.random(-2, 2), $.random(-2, 2)));
 //        particle.addBehavior(new BSeparate(particle.radius));
 
         $.physics.addParticle(particle);
@@ -31,8 +32,17 @@ public class Car {
 
     public void draw() {
         $.ellipseMode(RADIUS);
+        $.pushMatrix();
+
+        Vec velocity = particle.getVelocity();
+
+        $.translate(particle.x, particle.y);
+        $.rotate(velocity.heading() + HALF_PI);
+
         $.noStroke();
         $.fill(COLOR);
-        $.ellipse(particle.x, particle.y, particle.radius, particle.radius);
+        $.ellipse(0, 0, particle.radius, particle.radius * (1 + velocity.mag()));
+
+        $.popMatrix();
     }
 }

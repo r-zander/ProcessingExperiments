@@ -6,6 +6,7 @@ import java.util.List;
 
 import processing.core.PApplet;
 import punktiert.math.Vec;
+import punktiert.physics.BAttraction;
 import punktiert.physics.VPhysics;
 import creativecode.city.GridCell.CellState;
 
@@ -32,21 +33,48 @@ public class GenerativeCity extends PApplet {
 
     List<Car>   cars         = new ArrayList<Car>();
 
+    // attractor
+    BAttraction attr;
+
     @Override
     public void setup() {
         $ = this;
         size(displayWidth, displayHeight, P2D);
 
-        physics = new VPhysics(new Vec(), new Vec(width, height), false);
+        physics = new VPhysics();
+        physics.setBox(new Vec(), new Vec(width, height));
+        physics.setBounceSpace(false);
+        physics.setWrappedSpace(true);
+
+        physics.setfriction(.3f);
+//        // new AttractionForce: (Vec pos, radius, strength)
+//        attr = new BAttraction(new Vec(width * .5f, height * .5f), 400, .2f);
+//        physics.addBehavior(attr);
 
         grid = new Grid();
+
+//        spawnCars();
+    }
+
+    private void spawnCars() {
+        for (int i = 0; i < 500; i++) {
+            cars.add(new Car(random(Car.DIAMETER, width - Car.DIAMETER), random(Car.DIAMETER, height - Car.DIAMETER)));
+        }
     }
 
     @Override
     public void draw() {
-        background(Colors.BACKGROUND);
+        fill(Colors.BACKGROUND, 60);
+        noStroke();
+        rect(0, 0, width, height);
 
         physics.update();
+
+        noFill();
+        stroke(200, 0, 0);
+        // set pos to mousePosition
+//        attr.setAttractor(new Vec(mouseX, mouseY));
+//        ellipse(attr.getAttractor().x, attr.getAttractor().y, attr.getRadius(), attr.getRadius());
 
         if (mousePressed) {
             if (currentInteraction == null) {
@@ -78,6 +106,13 @@ public class GenerativeCity extends PApplet {
         drawFPS();
     }
 
+    @Override
+    public void mouseReleased() {
+        if (currentInteraction.currentMouseButton == LEFT) {
+            grid.finishBlock();
+        }
+    }
+
     void drawFPS() {
         fill(Car.COLOR);
         textSize(12);
@@ -89,7 +124,7 @@ public class GenerativeCity extends PApplet {
 
         int intensity = currentInteraction.frames;
 
-        float buildDiameter = intensity * grid.cellDimension;
+        float buildDiameter = intensity * Grid.cellDimension;
 
         Ellipse2D.Float ellipse =
                 new Ellipse2D.Float(
@@ -119,7 +154,7 @@ public class GenerativeCity extends PApplet {
                 }
                 float x = grid.getX(gridX);
                 float y = grid.getY(gridY);
-                if (ellipse.contains(x + grid.cellDimension / 2, y + grid.cellDimension / 2)) {
+                if (ellipse.contains(x + Grid.cellDimension / 2, y + Grid.cellDimension / 2)) {
                     grid.changeState(gridX, gridY, newState);
                 }
             }
@@ -150,12 +185,18 @@ public class GenerativeCity extends PApplet {
                 gridX = newGridX;
                 gridY = newGridY;
                 frames = 1;
+                if (currentMouseButton == LEFT) {
+                    grid.finishBlock();
+                }
                 currentMouseButton = mouseButton;
             } else if (newGridX != gridX || newGridY != gridY) {
                 float frameChange = sqrt(sq(newGridX - gridX) + sq(newGridY - gridY));
                 frames -= round(frameChange);
                 if (frames <= 0) {
                     frames = 1;
+                    if (currentMouseButton == LEFT) {
+                        grid.finishBlock();
+                    }
                 }
                 gridX = newGridX;
                 gridY = newGridY;
