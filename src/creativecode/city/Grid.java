@@ -1,6 +1,7 @@
 package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
+import static processing.core.PApplet.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import pathfinder.IGraphSearch;
 import processing.core.PVector;
 import util.Numbers;
 import creativecode.city.GridCell.CellState;
+import creativecode.city.Street.DebugPath;
 
 public class Grid {
 
@@ -34,6 +36,10 @@ public class Grid {
 
     List<Street>       streets       = new ArrayList<Street>();
 
+    final static float straightCost  = 1;
+
+    final static float diagonalCost  = straightCost * sqrt(2);
+
     public Grid() {
 
         pathFinderGraph = new Graph();
@@ -43,23 +49,43 @@ public class Grid {
 
             for (int gridY = 0; gridY < getMaxGridY(); gridY++) {
 
-                GridCell cell = new GridCell(getX(gridX) + cellDimension / 2, getY(gridY) + cellDimension / 2);
+                GridCell cell = new GridCell(getX(gridX), getY(gridY));
                 cellGrid[gridX][gridY] = cell;
                 pathFinderGraph.addNode(cell.graphNode);
 
                 if (gridX > 0) {
                     if (gridY > 0) {
-                        pathFinderGraph.addEdge(cell.nodeId, cellGrid[gridX - 1][gridY].nodeId, 1);
-                        pathFinderGraph.addEdge(cell.nodeId, cellGrid[gridX - 1][gridY - 1].nodeId, 1);
-                        pathFinderGraph.addEdge(cell.nodeId, cellGrid[gridX][gridY - 1].nodeId, 1);
+                        pathFinderGraph.addEdge(
+                                cell.nodeId,
+                                cellGrid[gridX - 1][gridY].nodeId,
+                                straightCost,
+                                straightCost);
+                        pathFinderGraph.addEdge(
+                                cell.nodeId,
+                                cellGrid[gridX - 1][gridY - 1].nodeId,
+                                diagonalCost,
+                                diagonalCost);
+                        pathFinderGraph.addEdge(
+                                cell.nodeId,
+                                cellGrid[gridX][gridY - 1].nodeId,
+                                straightCost,
+                                straightCost);
                     } else {
-                        pathFinderGraph.addEdge(cell.nodeId, cellGrid[gridX - 1][gridY].nodeId, 1);
+                        pathFinderGraph.addEdge(
+                                cell.nodeId,
+                                cellGrid[gridX - 1][gridY].nodeId,
+                                straightCost,
+                                straightCost);
                     }
                     if (gridY < getMaxGridY() - 1) {
-                        pathFinderGraph.addEdge(cell.nodeId, cellGrid[gridX - 1][gridY + 1].nodeId, 1);
+                        pathFinderGraph.addEdge(
+                                cell.nodeId,
+                                cellGrid[gridX - 1][gridY + 1].nodeId,
+                                diagonalCost,
+                                diagonalCost);
                     }
                 } else if (gridY > 0) {
-                    pathFinderGraph.addEdge(cell.nodeId, cellGrid[gridX][gridY - 1].nodeId, 1);
+                    pathFinderGraph.addEdge(cell.nodeId, cellGrid[gridX][gridY - 1].nodeId, straightCost, straightCost);
                 }
 
             }
@@ -85,19 +111,23 @@ public class Grid {
     void draw() {
 //        visualizePathFinderGraph();
 
-        $.stroke(COLOR);
-        $.strokeWeight(WEIGHT);
-
-        for (float x = cellDimension; x < $.width; x += cellDimension) {
-            $.line(x, 0, x, $.height);
-        }
-
-        for (float y = cellDimension; y < $.height; y += cellDimension) {
-            $.line(0, y, $.width, y);
-        }
+//        $.stroke(COLOR);
+//        $.strokeWeight(WEIGHT);
+//
+//        for (float x = cellDimension; x < $.width; x += cellDimension) {
+//            $.line(x, 0, x, $.height);
+//        }
+//
+//        for (float y = cellDimension; y < $.height; y += cellDimension) {
+//            $.line(0, y, $.width, y);
+//        }
 
         for (GridCell[] column : cellGrid) {
             for (GridCell cell : column) {
+                $.fill(COLOR);
+                $.noStroke();
+                $.ellipse(cell.x, cell.y, 6, 6);
+
                 if (cell.state == CellState.BUILT) {
                     cell.draw();
                 }
@@ -110,11 +140,11 @@ public class Grid {
     }
 
     float getX(int gridX) {
-        return gridX * cellDimension;
+        return (cellDimension / 2) + gridX * cellDimension;
     }
 
     float getY(int gridY) {
-        return gridY * cellDimension;
+        return (cellDimension / 2) + gridY * cellDimension;
     }
 
     int getGridX(float x) {
@@ -123,6 +153,10 @@ public class Grid {
 
     int getGridY(float y) {
         return (int) (y / cellDimension);
+    }
+
+    GridCell getCell(float x, float y) {
+        return cellGrid[getGridX(x)][getGridY(y)];
     }
 
     boolean isState(int gridX, int gridY, CellState state) {
@@ -137,29 +171,36 @@ public class Grid {
         float x = getX(gridX);
         float y = getY(gridY);
 
+        GridCell cell = cellGrid[gridX][gridY];
         switch (newState) {
             case BUILT:
 
-                cellGrid[gridX][gridY].building =
+                cell.building =
                         new Building(
                                 x + $.buildPadding,
                                 y + $.buildPadding,
                                 cellDimension - $.buildPadding * 2,
                                 cellDimension - $.buildPadding * 2);
-                currentBlock.add(cellGrid[gridX][gridY]);
+                currentBlock.add(cell);
+                pathFinderGraph.removeNode(cell.nodeId);
                 break;
             case EMPTY:
+                // TODO re-add the graph node with all edges
                 break;
             default:
         }
 
-        cellGrid[gridX][gridY].state = newState;
+        cell.state = newState;
     }
 
     /**
      * Schließt den momentanen Häuserblock ab und erzeugt eine Straße dazu.
      */
     void finishBlock() {
+        if (currentBlock.isEmpty()) {
+            return;
+        }
+
         /*
          * Find center of block
          */
@@ -183,10 +224,10 @@ public class Grid {
             }
         }
 
-        List<PVector> path = new ArrayList<PVector>();
+        List<DebugPath> path = new ArrayList<DebugPath>();
 
         PVector blockCenter = new PVector((minX + maxX) / 2, (minY + maxY) / 2);
-        path.add(blockCenter);
+        path.add(new DebugPath("Block Center", getCell(blockCenter.x, blockCenter.y)));
 
         List<GraphNode> streetNodes = new ArrayList<GraphNode>();
 
@@ -204,7 +245,7 @@ public class Grid {
             case 2:
                 // Right
                 startCell = cellGrid[getMaxGridX() - 1][Numbers.random(0, getMaxGridY() - 1)];
-                blockStartCell = cellGrid[getGridX(maxY) + 1][getGridY(blockCenter.y)];
+                blockStartCell = cellGrid[getGridX(maxX) + 1][getGridY(blockCenter.y)];
                 break;
             case 3:
                 // Bottom
@@ -213,19 +254,21 @@ public class Grid {
                 break;
             case 4:
                 // Left
-                startCell = cellGrid[getMaxGridX() - 1][Numbers.random(0, getMaxGridY() - 1)];
-                blockStartCell = cellGrid[getGridX(minY) - 1][getGridY(blockCenter.y)];
+                startCell = cellGrid[0][Numbers.random(0, getMaxGridY() - 1)];
+                blockStartCell = cellGrid[getGridX(minX) - 1][getGridY(blockCenter.y)];
                 break;
             default:
                 break;
         }
 
-        path.add(new PVector(startCell.x, startCell.y));
-        path.add(new PVector(blockStartCell.x, blockStartCell.y));
+        path.add(new DebugPath("Start Cell", getCell(startCell.x, startCell.y)));
+        path.add(new DebugPath("Block Start Cell", getCell(blockStartCell.x, blockStartCell.y)));
 
         pathFinder.search(startCell.nodeId, blockStartCell.nodeId);
         streetNodes.addAll(Arrays.asList(pathFinder.getRoute()));
-        streetNodes.remove(streetNodes.size() - 1);
+        if (!streetNodes.isEmpty()) {
+            streetNodes.remove(streetNodes.size() - 1);
+        }
 
         int otherSide = Numbers.random(1, 4);
         if (otherSide == side) {
@@ -247,7 +290,7 @@ public class Grid {
             case 2:
                 // Right
                 endCell = cellGrid[getMaxGridX() - 1][Numbers.random(0, getMaxGridY() - 1)];
-                blockEndCell = cellGrid[getGridX(maxY) + 1][getGridY(blockCenter.y)];
+                blockEndCell = cellGrid[getGridX(maxX) + 1][getGridY(blockCenter.y)];
                 break;
             case 3:
                 // Bottom
@@ -256,19 +299,21 @@ public class Grid {
                 break;
             case 4:
                 // Left
-                endCell = cellGrid[getMaxGridX() - 1][Numbers.random(0, getMaxGridY() - 1)];
-                blockEndCell = cellGrid[getGridX(minY) - 1][getGridY(blockCenter.y)];
+                endCell = cellGrid[0][Numbers.random(0, getMaxGridY() - 1)];
+                blockEndCell = cellGrid[getGridX(minX) - 1][getGridY(blockCenter.y)];
                 break;
             default:
                 break;
         }
 
-        path.add(new PVector(blockEndCell.x, blockEndCell.y));
-        path.add(new PVector(endCell.x, endCell.y));
+        path.add(new DebugPath("Block End Cell", getCell(blockEndCell.x, blockEndCell.y)));
+        path.add(new DebugPath("End Cell", getCell(endCell.x, endCell.y)));
 
         pathFinder.search(blockStartCell.nodeId, blockEndCell.nodeId);
         streetNodes.addAll(Arrays.asList(pathFinder.getRoute()));
-        streetNodes.remove(streetNodes.size() - 1);
+        if (!streetNodes.isEmpty()) {
+            streetNodes.remove(streetNodes.size() - 1);
+        }
 
         pathFinder.search(blockEndCell.nodeId, endCell.nodeId);
         streetNodes.addAll(Arrays.asList(pathFinder.getRoute()));

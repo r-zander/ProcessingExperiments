@@ -192,11 +192,13 @@ public class GenerativeCity extends PApplet {
             } else if (newGridX != gridX || newGridY != gridY) {
                 float frameChange = sqrt(sq(newGridX - gridX) + sq(newGridY - gridY));
                 frames -= round(frameChange);
+
+                if (frames < 0 && currentMouseButton == LEFT) {
+                    grid.finishBlock();
+                }
+
                 if (frames <= 0) {
                     frames = 1;
-                    if (currentMouseButton == LEFT) {
-                        grid.finishBlock();
-                    }
                 }
                 gridX = newGridX;
                 gridY = newGridY;

@@ -1,72 +1,75 @@
 package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
+import static processing.core.PConstants.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import pathfinder.GraphNode;
-import processing.core.PVector;
 
 public class Street {
 
     List<GraphNode> nodes;
 
-    List<PVector>   path = new ArrayList<PVector>();
+    List<DebugPath> path = new ArrayList<DebugPath>();
 
-    public Street(List<GraphNode> nodes, List<PVector> path) {
+    public Street(List<GraphNode> nodes, List<DebugPath> path) {
         this.nodes = nodes;
         this.path = path;
     }
 
     public void draw() {
-        $.noStroke();
-
-        int index = 0;
-
-        for (PVector pathVector : path) {
-            switch (index) {
-                case 0:
-                    $.fill(255, 0, 0);
-                    break;
-                case 1:
-                    $.fill(255, 128, 0);
-                    break;
-                case 2:
-                    $.fill(255, 255, 0);
-                    break;
-                case 3:
-                    $.fill(0, 255, 0);
-                    break;
-                case 4:
-                    $.fill(0, 255, 255);
-                    break;
-
-                default:
-                    $.fill(255, 255, 255);
-                    break;
-            }
-            $.ellipse(pathVector.x, pathVector.y, 8, 8);
-            index++;
-        }
+//        for (DebugPath debugPath : path) {
+//            debugPath.draw();
+//        }
 
         Iterator<GraphNode> iterator = nodes.iterator();
         if (!iterator.hasNext()) {
             return;
         }
 
-        $.stroke(Car.COLOR);
+        $.colorMode(HSB);
         $.strokeWeight(3);
+
+        int hue = 0;
 
         GraphNode previousNode = iterator.next();
 
         while (iterator.hasNext()) {
             GraphNode node = iterator.next();
+            $.stroke(hue, 255, 255);
             $.line(previousNode.xf(), previousNode.yf(), node.xf(), node.yf());
             previousNode = node;
+            hue += 3;
+            hue %= 256;
         }
 
+        $.colorMode(RGB);
+    }
+
+    public static class DebugPath {
+
+        String   title;
+
+        GridCell cell;
+
+        public DebugPath(String title, GridCell cell) {
+            this.title = title;
+            this.cell = cell;
+        }
+
+        void draw() {
+            $.textSize(10);
+            $.fill(255);
+            $.text(title, cell.x, cell.y);
+
+            $.rectMode(CORNER);
+            $.stroke(128);
+            $.strokeWeight(Grid.WEIGHT);
+            $.rect(cell.x, cell.y, Grid.cellDimension, Grid.cellDimension);
+        }
     }
 
 }

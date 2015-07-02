@@ -2,6 +2,8 @@ package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import pathfinder.GraphNode;
@@ -11,10 +13,11 @@ public class GridCell {
 
     enum CellState {
         EMPTY,
-        BUILT;
+        BUILT,
+        STREET;
     }
 
-    private static final AtomicInteger SEQUENCER = new AtomicInteger(1);
+    private static final AtomicInteger SEQUENCER         = new AtomicInteger(1);
 
     final int                          nodeId;
 
@@ -25,6 +28,8 @@ public class GridCell {
     final float                        x, y;
 
     final GraphNode                    graphNode;
+
+    List<Street>                       associatedStreets = new ArrayList<Street>();
 
     public GridCell(float x, float y) {
         this.state = CellState.EMPTY;
