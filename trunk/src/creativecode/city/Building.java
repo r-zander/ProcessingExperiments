@@ -29,7 +29,7 @@ public class Building {
         particle.addBehavior(new BCollision());
 //        particle.addBehavior(new BSeparate(particle.radius));
         $.physics.addParticle(particle);
-        spawnCar();
+//        spawnCar();
     }
 
     void draw() {
