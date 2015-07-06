@@ -6,7 +6,6 @@ import java.util.List;
 
 import processing.core.PApplet;
 import punktiert.math.Vec;
-import punktiert.physics.BAttraction;
 import punktiert.physics.VPhysics;
 import creativecode.city.GridCell.CellState;
 
@@ -23,18 +22,17 @@ public class GenerativeCity extends PApplet {
 
     }
 
-    VPhysics    physics;
+    VPhysics       physics;
 
-    Interaction currentInteraction;
+    Interaction    currentInteraction;
 
-    float       buildPadding = 3;
+    float          buildPadding = 3;
 
-    Grid        grid;
+    Grid           grid;
 
-    List<Car>   cars         = new ArrayList<Car>();
+    List<Car>      cars         = new ArrayList<Car>();
 
-    // attractor
-    BAttraction attr;
+    public boolean debug        = true;
 
     @Override
     public void setup() {
@@ -47,13 +45,9 @@ public class GenerativeCity extends PApplet {
         physics.setWrappedSpace(true);
 
         physics.setfriction(.3f);
-//        // new AttractionForce: (Vec pos, radius, strength)
-//        attr = new BAttraction(new Vec(width * .5f, height * .5f), 400, .2f);
-//        physics.addBehavior(attr);
 
         grid = new Grid();
 
-//        spawnCars();
     }
 
     private void spawnCars() {
@@ -69,12 +63,6 @@ public class GenerativeCity extends PApplet {
         rect(0, 0, width, height);
 
         physics.update();
-
-        noFill();
-        stroke(200, 0, 0);
-        // set pos to mousePosition
-//        attr.setAttractor(new Vec(mouseX, mouseY));
-//        ellipse(attr.getAttractor().x, attr.getAttractor().y, attr.getRadius(), attr.getRadius());
 
         if (mousePressed) {
             if (currentInteraction == null) {
@@ -104,12 +92,57 @@ public class GenerativeCity extends PApplet {
         grid.step();
 
         drawFPS();
+
+//        filter(GRAY);
     }
+
+//    int colorMode = RGB;
+//
+//    @Override
+//    public void colorMode(int mode) {
+//        super.colorMode(mode);
+//        colorMode = mode;
+//    }
+//
+//    @Override
+//    public void fill(float v1, float v2, float v3) {
+//        if (colorMode == HSB) {
+//            super.fill(v1);
+//        } else {
+//            super.fill(brightness(color(v1, v2, v3)));
+//        }
+//    }
+//
+//    @Override
+//    public void fill(int rgb) {
+//        super.fill(brightness(rgb));
+//    }
+//
+//    @Override
+//    public void stroke(float v1, float v2, float v3) {
+//        if (colorMode == HSB) {
+//            super.stroke(v1);
+//        } else {
+//            super.stroke(brightness(color(v1, v2, v3)));
+//        }
+//    }
+//
+//    @Override
+//    public void stroke(int rgb) {
+//        super.stroke(brightness(rgb));
+//    }
 
     @Override
     public void mouseReleased() {
         if (currentInteraction.currentMouseButton == LEFT) {
             grid.finishBlock();
+        }
+    }
+
+    @Override
+    public void keyPressed() {
+        if (key == 'd') {
+            debug = !debug;
         }
     }
 
@@ -149,7 +182,8 @@ public class GenerativeCity extends PApplet {
                 if (gridY >= grid.getMaxGridY()) {
                     break;
                 }
-                if (grid.isState(gridX, gridY, newState)) {
+                if (grid.isState(gridX, gridY, newState) || grid.isState(gridX, gridY, CellState.STREET)
+                        || grid.isState(gridX, gridY, CellState.BLOCKED)) {
                     continue;
                 }
                 float x = grid.getX(gridX);
