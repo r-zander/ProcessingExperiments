@@ -2,6 +2,9 @@ package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
 import static processing.core.PApplet.*;
+
+import java.util.List;
+
 import punktiert.math.Vec;
 import punktiert.physics.BehaviorInterface;
 import punktiert.physics.VParticle;
@@ -20,7 +23,16 @@ public class BPathFollowing implements BehaviorInterface {
 
     @Override
     public void apply(VParticle p) {
-        p.addForce(follow(p));
+        // Follow path force
+        Vec f = follow(p);
+        // Separate from other boids force
+        Vec s = separate(p, $.cars);
+        // Arbitrary weighting
+        f.mult(3);
+        s.mult(1);
+        // Accumulate in acceleration
+        p.addForce(f);
+        p.addForce(s);
 
     }
 
@@ -135,6 +147,42 @@ public class BPathFollowing implements BehaviorInterface {
         Vec steer = desired.sub(p.getVelocity());
         steer.limit(maxforce);  // Limit to maximum steering force
 
+        return steer;
+    }
+
+    // Separation
+    // Method checks for nearby boids and steers away
+    Vec separate(VParticle p, List<Car> cars) {
+        float desiredseparation = p.getRadius() * 2;
+        Vec steer = new Vec(0, 0, 0);
+        int count = 0;
+        // For every boid in the system, check if it's too close
+        for (int i = 0; i < cars.size(); i++) {
+            VParticle other = cars.get(i).particle;
+            float d = p.dist(other);
+            // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
+            if ((d > 0) && (d < desiredseparation)) {
+                // Calculate vector pointing away from neighbor
+                Vec diff = p.sub(other);
+                diff.normalize();
+                diff.div(d);        // Weight by distance
+                steer.add(diff);
+                count++;            // Keep track of how many
+            }
+        }
+        // Average -- divide by how many
+        if (count > 0) {
+            steer.div((float) count);
+        }
+
+        // As long as the vector is greater than 0
+        if (steer.mag() > 0) {
+            // Implement Reynolds: Steering = Desired - Velocity
+            steer.normalize();
+            steer.mult(maxspeed);
+            steer.sub(p.getVelocity());
+            steer.limit(maxforce);
+        }
         return steer;
     }
 
