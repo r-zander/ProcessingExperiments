@@ -8,24 +8,100 @@ import java.util.Iterator;
 import java.util.List;
 
 import pathfinder.GraphNode;
+import processing.core.PVector;
+import punktiert.math.Vec;
+import util.TwoDimensional;
 
-public class Street {
+public class Street extends Path {
 
-    List<GraphNode> nodes;
+    List<GridCell>             nodes    = new ArrayList<GridCell>();
 
-    List<DebugPath> path = new ArrayList<DebugPath>();
+    List<DebugPath>            path     = new ArrayList<DebugPath>();
 
-    public Street(List<GraphNode> nodes, List<DebugPath> path) {
-        this.nodes = nodes;
+    int                        steps;
+
+    Vec                        spawnPoint;
+
+    ShiffmanPath               shiffmanPath;
+
+    ArrayList<ShiffmanVehicle> vehicles = new ArrayList<ShiffmanVehicle>();
+
+    public Street(List<GridCell> nodes, List<DebugPath> path) {
+
+        cleanOutNodes(nodes);
+
         this.path = path;
+        this.radius = Grid.cellDimension / 2;
+
+        shiffmanPath = new ShiffmanPath();
+        for (GridCell cell : this.nodes) {
+            addPoint(cell.xf() + radius, cell.yf() + radius);
+            shiffmanPath.addPoint(cell.xf() + radius, cell.yf() + radius);
+        }
+
+        for (DebugPath debugPath : path) {
+            if ("Start Cell".equals(debugPath.title)) {
+                GridCell spawnCell = debugPath.cell;
+                spawnPoint = new Vec(spawnCell.xf(), spawnCell.yf());
+                break;
+            }
+        }
+
+    }
+
+    /**
+     * Entferne alle überflüssigen nodes, die keine Ecken des Pfades sind.
+     * 
+     * @param nodes
+     */
+    void cleanOutNodes(List<GridCell> nodes) {
+        Iterator<GridCell> iterator = nodes.iterator();
+        if (iterator.hasNext()) {
+
+            GridCell previousCell = iterator.next();
+            float previousAngle = -1;
+
+            while (iterator.hasNext()) {
+                GridCell cell = iterator.next();
+                float angle = TwoDimensional.angleBetween(previousCell.xf(), previousCell.yf(), cell.xf(), cell.yf());
+
+                if (previousAngle != angle) {
+                    this.nodes.add(previousCell);
+                    previousAngle = angle;
+                }
+
+                previousCell = cell;
+            }
+
+            // Add last cell definitely
+            this.nodes.add(previousCell);
+        }
+    }
+
+    public void step() {
+        steps++;
+        if (steps % 60 == 0) {
+            spawnCar();
+            float maxspeed = 3;
+            float maxforce = 0.3f;
+            vehicles.add(new ShiffmanVehicle(new PVector(spawnPoint.x, spawnPoint.y), maxspeed, maxforce));
+        }
+    }
+
+    private void spawnCar() {
+        Car car = new Car(spawnPoint.x, spawnPoint.y);
+        car.particle.addBehavior(new BPathFollowing(this));
+        $.cars.add(car);
     }
 
     public void draw() {
-//        for (DebugPath debugPath : path) {
-//            debugPath.draw();
-//        }
+        if ($.debug) {
+            for (DebugPath debugPath : path) {
+                debugPath.draw();
+            }
+        }
 
-        Iterator<GraphNode> iterator = nodes.iterator();
+        Iterator<GridCell> iterator = nodes.iterator();
         if (!iterator.hasNext()) {
             return;
         }
@@ -47,6 +123,13 @@ public class Street {
         }
 
         $.colorMode(RGB);
+
+        for (ShiffmanVehicle v : vehicles) {
+            // Path following and separation are worked on in this function
+            v.applyBehaviors(vehicles, shiffmanPath);
+            // Call the generic run method (update, borders, display, etc.)
+            v.run();
+        }
     }
 
     public static class DebugPath {
@@ -63,12 +146,12 @@ public class Street {
         void draw() {
             $.textSize(10);
             $.fill(255);
-            $.text(title, cell.x, cell.y);
+            $.text(title, cell.xf(), cell.yf());
 
             $.rectMode(CORNER);
             $.stroke(128);
             $.strokeWeight(Grid.WEIGHT);
-            $.rect(cell.x, cell.y, Grid.cellDimension, Grid.cellDimension);
+            $.rect(cell.xf(), cell.yf(), Grid.cellDimension, Grid.cellDimension);
         }
     }
 

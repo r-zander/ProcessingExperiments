@@ -17,8 +17,6 @@ public class Building {
 
     final static int STROKE     = 0xFF78CCFF;
 
-    int              steps;
-
     public Building(float x, float y, float width, float height) {
         $.fill(BACKGROUND);
         $.stroke(STROKE);
@@ -29,7 +27,6 @@ public class Building {
         particle.addBehavior(new BCollision());
 //        particle.addBehavior(new BSeparate(particle.radius));
         $.physics.addParticle(particle);
-//        spawnCar();
     }
 
     void draw() {
@@ -41,17 +38,6 @@ public class Building {
 //        $.ellipse(particle.x, particle.y, particle.radius, particle.radius);
     }
 
-    public void step() {
-//        steps++;
-//        if (steps % 60 == 0) {
-//            spawnCar();
-//        }
-    }
+    public void step() {}
 
-    private void spawnCar() {
-        Car car = new Car(particle.x, particle.y);
-        $.cars.add(car);
-
-//        $.physics.addSpring(new VSpring(car.particle, particle, 100, 0.0005f));
-    }
 }
