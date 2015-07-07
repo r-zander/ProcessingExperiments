@@ -11,7 +11,7 @@ public class Car {
 
     static final int   COLOR    = 0xffFFDB5B;
 
-    static final float DIAMETER = 5;
+    static final float DIAMETER = 3;
 
     VParticle          particle;
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 import processing.core.PApplet;
 import punktiert.math.Vec;
+import punktiert.physics.VParticle;
 import punktiert.physics.VPhysics;
 import creativecode.city.GridCell.CellState;
 
@@ -22,17 +23,19 @@ public class GenerativeCity extends PApplet {
 
     }
 
-    VPhysics       physics;
+    VPhysics               physics;
 
-    Interaction    currentInteraction;
+    Interaction            currentInteraction;
 
-    float          buildPadding = 3;
+    float                  buildPadding     = 3;
 
-    Grid           grid;
+    Grid                   grid;
 
-    List<Car>      cars         = new ArrayList<Car>();
+    List<Car>              cars             = new ArrayList<Car>();
 
-    public boolean debug        = true;
+    public boolean         debug            = false;
+
+    public List<VParticle> particlesToReAdd = new ArrayList<VParticle>();
 
     @Override
     public void setup() {
@@ -42,18 +45,12 @@ public class GenerativeCity extends PApplet {
         physics = new VPhysics();
         physics.setBox(new Vec(), new Vec(width, height));
         physics.setBounceSpace(false);
-        physics.setWrappedSpace(true);
+        physics.setWrappedSpace(false);
 
         physics.setfriction(.3f);
 
         grid = new Grid();
 
-    }
-
-    private void spawnCars() {
-        for (int i = 0; i < 500; i++) {
-            cars.add(new Car(random(Car.DIAMETER, width - Car.DIAMETER), random(Car.DIAMETER, height - Car.DIAMETER)));
-        }
     }
 
     @Override
@@ -63,6 +60,11 @@ public class GenerativeCity extends PApplet {
         rect(0, 0, width, height);
 
         physics.update();
+
+        for (VParticle particle : particlesToReAdd) {
+            physics.addParticle(particle);
+        }
+        particlesToReAdd.clear();
 
         if (mousePressed) {
             if (currentInteraction == null) {

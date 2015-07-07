@@ -32,6 +32,14 @@ class Path {
         points.add(point);
     }
 
+    Vec getPoint(int index) {
+        return points.get(index);
+    }
+
+    int length() {
+        return points.size();
+    }
+
     // Draw the path
     void display() {
         $.strokeJoin(ROUND);

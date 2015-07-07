@@ -1,5 +1,7 @@
 package util;
 
+import processing.core.PVector;
+
 public class TwoDimensional {
 
     private TwoDimensional() {}
@@ -15,12 +17,14 @@ public class TwoDimensional {
         y1 = 300;
         x2 = 100;
         y2 = 200;
-        System.out.println(angleBetween(x1, y1, x2, y2) * 180 / Math.PI);
+        System.out.println((angleBetween(x1, y1, x2, y2)));
+        System.out.println((PVector.angleBetween(new PVector(x1, y1), new PVector(x2, y2))));
 
         x1 = 100;
         y1 = 200;
         x2 = 100;
         y2 = 300;
-        System.out.println(angleBetween(x1, y1, x2, y2) * 180 / Math.PI);
+        System.out.println((angleBetween(x1, y1, x2, y2)));
+        System.out.println((PVector.angleBetween(new PVector(x1, y1), new PVector(x2, y2))));
     }
 }

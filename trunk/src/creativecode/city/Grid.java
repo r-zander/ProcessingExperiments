@@ -307,7 +307,12 @@ public class Grid {
             cell.state = CellState.STREET;
         }
 
-        streets.add(new Street(streetNodes, path));
+        /*
+         * Only create streets were actually a path could have been found.
+         */
+        if (!streetNodes.isEmpty()) {
+            streets.add(new Street(streetNodes, path));
+        }
 
         /*
          * Reset block
