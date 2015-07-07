@@ -8,23 +8,26 @@ import java.util.Iterator;
 import java.util.List;
 
 import pathfinder.GraphNode;
-import processing.core.PVector;
 import punktiert.math.Vec;
 import util.TwoDimensional;
 
 public class Street extends Path {
 
-    List<GridCell>             nodes    = new ArrayList<GridCell>();
+    List<GridCell>             nodes     = new ArrayList<GridCell>();
 
-    List<DebugPath>            path     = new ArrayList<DebugPath>();
+    List<DebugPath>            path      = new ArrayList<DebugPath>();
 
     int                        steps;
 
-    Vec                        spawnPoint;
+    Vec                        spawnPointForward;
+
+    Vec                        spawnPointBackward;
 
     ShiffmanPath               shiffmanPath;
 
-    ArrayList<ShiffmanVehicle> vehicles = new ArrayList<ShiffmanVehicle>();
+    ArrayList<ShiffmanVehicle> vehicles  = new ArrayList<ShiffmanVehicle>();
+
+    private boolean            spawnCars = true;
 
     public Street(List<GridCell> nodes, List<DebugPath> path) {
 
@@ -33,16 +36,24 @@ public class Street extends Path {
         this.path = path;
         this.radius = Grid.cellDimension / 2;
 
-        shiffmanPath = new ShiffmanPath();
+//        shiffmanPath = new ShiffmanPath();
         for (GridCell cell : this.nodes) {
             addPoint(cell.xf() + radius, cell.yf() + radius);
-            shiffmanPath.addPoint(cell.xf() + radius, cell.yf() + radius);
+//            shiffmanPath.addPoint(cell.xf() + radius, cell.yf() + radius);
         }
 
         for (DebugPath debugPath : path) {
             if ("Start Cell".equals(debugPath.title)) {
                 GridCell spawnCell = debugPath.cell;
-                spawnPoint = new Vec(spawnCell.xf(), spawnCell.yf());
+                spawnPointForward = new Vec(spawnCell.xf(), spawnCell.yf());
+                break;
+            }
+        }
+
+        for (DebugPath debugPath : path) {
+            if ("End Cell".equals(debugPath.title)) {
+                GridCell spawnCell = debugPath.cell;
+                spawnPointBackward = new Vec(spawnCell.xf(), spawnCell.yf());
                 break;
             }
         }
@@ -80,17 +91,18 @@ public class Street extends Path {
 
     public void step() {
         steps++;
-        if (steps % 60 == 0) {
-            spawnCar();
-            float maxspeed = 3;
-            float maxforce = 0.3f;
-            vehicles.add(new ShiffmanVehicle(new PVector(spawnPoint.x, spawnPoint.y), maxspeed, maxforce));
+        if (spawnCars && steps % 20 == 0) {
+            spawnCar(spawnPointForward, true);
+            spawnCar(spawnPointBackward, false);
+//            float maxspeed = 3;
+//            float maxforce = 0.3f;
+//            vehicles.add(new ShiffmanVehicle(new PVector(spawnPoint.x, spawnPoint.y), maxspeed, maxforce));
         }
     }
 
-    private void spawnCar() {
-        Car car = new Car(spawnPoint.x, spawnPoint.y);
-        car.particle.addBehavior(new BPathFollowing(this));
+    private void spawnCar(Vec location, boolean forward) {
+        Car car = new Car(location.x, location.y);
+        car.particle.addBehavior(new BPathFollowing2(this, forward));
         $.cars.add(car);
     }
 
@@ -99,36 +111,36 @@ public class Street extends Path {
             for (DebugPath debugPath : path) {
                 debugPath.draw();
             }
-        }
 
-        Iterator<GridCell> iterator = nodes.iterator();
-        if (!iterator.hasNext()) {
-            return;
-        }
+            Iterator<GridCell> iterator = nodes.iterator();
+            if (!iterator.hasNext()) {
+                return;
+            }
 
-        $.colorMode(HSB);
-        $.strokeWeight(3);
+            $.colorMode(HSB);
+            $.strokeWeight(3);
 
-        int hue = 0;
+            int hue = 0;
 
-        GraphNode previousNode = iterator.next();
+            GraphNode previousNode = iterator.next();
 
-        while (iterator.hasNext()) {
-            GraphNode node = iterator.next();
-            $.stroke(hue, 255, 255);
-            $.line(previousNode.xf(), previousNode.yf(), node.xf(), node.yf());
-            previousNode = node;
-            hue += 3;
-            hue %= 256;
-        }
+            while (iterator.hasNext()) {
+                GraphNode node = iterator.next();
+                $.stroke(hue, 255, 255);
+                $.line(previousNode.xf(), previousNode.yf(), node.xf(), node.yf());
+                previousNode = node;
+                hue += 3;
+                hue %= 256;
+            }
 
-        $.colorMode(RGB);
+            $.colorMode(RGB);
 
-        for (ShiffmanVehicle v : vehicles) {
-            // Path following and separation are worked on in this function
-            v.applyBehaviors(vehicles, shiffmanPath);
-            // Call the generic run method (update, borders, display, etc.)
-            v.run();
+//            for (ShiffmanVehicle v : vehicles) {
+//                // Path following and separation are worked on in this function
+//                v.applyBehaviors(vehicles, shiffmanPath);
+//                // Call the generic run method (update, borders, display, etc.)
+//                v.run();
+//            }
         }
     }
 
@@ -153,6 +165,10 @@ public class Street extends Path {
             $.strokeWeight(Grid.WEIGHT);
             $.rect(cell.xf(), cell.yf(), Grid.cellDimension, Grid.cellDimension);
         }
+    }
+
+    public void disableCarSpawn() {
+        spawnCars = false;
     }
 
 }
