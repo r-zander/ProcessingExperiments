@@ -1,6 +1,7 @@
 package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
+import static processing.core.PApplet.*;
 import static processing.core.PConstants.*;
 
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import creativecode.city.BuildingShapeFactory.BuildingShape;
 public class BuildingShapeFactory extends ArrayList<BuildingShape> {
 
     abstract class BuildingShape {
+
+        float maxArea;
 
         abstract PShape createShape(float width, float height);
 
@@ -31,9 +34,13 @@ public class BuildingShapeFactory extends ArrayList<BuildingShape> {
         }
     }
 
-    private static final BuildingShapeFactory INSTANCE = new BuildingShapeFactory();
+    private static final BuildingShapeFactory INSTANCE      = new BuildingShapeFactory();
 
     private int                               totalSum;
+
+    private float                             minComplexity = Float.MAX_VALUE;
+
+    private float                             maxComplexity = 0;
 
     private BuildingShapeFactory() {
         /*
@@ -204,11 +211,23 @@ public class BuildingShapeFactory extends ArrayList<BuildingShape> {
 
         for (BuildingShape shape : this) {
             totalSum += shape.getProbability();
+            if (shape.getComplexity() < minComplexity) {
+                minComplexity = shape.getComplexity();
+            }
+            if (shape.getComplexity() > maxComplexity) {
+                maxComplexity = shape.getComplexity();
+            }
+        }
+
+        for (BuildingShape shape : this) {
+            shape.maxArea = map(shape.getComplexity(), minComplexity, maxComplexity, 1, 8);
+            System.out.println(shape.getComplexity() + " --> " + shape.maxArea);
         }
     }
 
     public static PShape newShape(float width, float height) {
         BuildingShape buildingShape = INSTANCE.getRandomBuildingShape();
+
         PShape shape = buildingShape.createShape(width, height);
 
         if (buildingShape.canBeRotated()) {

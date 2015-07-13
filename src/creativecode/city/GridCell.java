@@ -38,12 +38,15 @@ public class GridCell extends GraphNode {
     }
 
     public void draw() {
-        if (state == CellState.BUILT && building != null) {
+        if (state == CellState.BUILT) {
             $.stroke(Colors.BACKGROUND);
             $.strokeWeight(Grid.WEIGHT);
             $.fill(GenerativeCity.Colors.BACKGROUND);
             $.rect(xf(), yf(), Grid.cellDimension, Grid.cellDimension);
-            building.draw();
+
+            if (building != null) {
+                building.draw();
+            }
         }
     }
 }
