@@ -159,13 +159,13 @@ public class Grid {
 
         switch (newState) {
             case BUILT:
-
                 cell.building =
                         new Building(
                                 x + $.buildPadding,
                                 y + $.buildPadding,
-                                cellDimension - $.buildPadding * 2,
-                                cellDimension - $.buildPadding * 2);
+                                cellDimension,
+                                cellDimension,
+                                $.buildPadding);
                 currentBlock.add(cell);
                 pathFinderGraph.removeNode(cell.id());
                 break;

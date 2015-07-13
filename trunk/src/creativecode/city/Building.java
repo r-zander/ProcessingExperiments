@@ -9,15 +9,19 @@ import punktiert.physics.VParticle;
 
 public class Building {
 
-    VParticle        particle;
-
-    PShape           shape;
-
     final static int BACKGROUND = 0x5E232BFF;
 
     final static int STROKE     = 0xFF78CCFF;
 
-    public Building(float x, float y, float width, float height) {
+    VParticle        particle;
+
+    PShape           shape;
+
+    int              sizeX;
+
+    int              sizeY;
+
+    public Building(float x, float y, float width, float height, float padding) {
         $.fill(BACKGROUND);
         $.stroke(STROKE);
         $.strokeWeight(1);
@@ -25,17 +29,11 @@ public class Building {
 
         particle = new VParticle(new Vec(x + width / 2, y + height / 2), 0, max(width, height) / 2);
         particle.addBehavior(new BCollision());
-//        particle.addBehavior(new BSeparate(particle.radius));
         $.physics.addParticle(particle);
     }
 
     void draw() {
         $.shape(shape, particle.x - particle.radius, particle.y - particle.radius);
-//        $.ellipseMode(RADIUS);
-//        $.fill(BACKGROUND);
-//        $.stroke(STROKE);
-//        $.strokeWeight(1);
-//        $.ellipse(particle.x, particle.y, particle.radius, particle.radius);
     }
 
     public void step() {}

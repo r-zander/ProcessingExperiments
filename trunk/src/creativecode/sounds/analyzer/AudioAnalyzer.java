@@ -34,7 +34,7 @@ public class AudioAnalyzer extends PApplet {
         ac.out.addInput(gain);
 
         ShortFrameSegmenter sfs = new ShortFrameSegmenter(ac);
-//        sfs.
+        sfs.setChunkSize(512);
         sfs.addInput(ac.out);
 
         FFT fft = new FFT();

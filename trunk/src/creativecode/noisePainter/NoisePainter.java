@@ -17,17 +17,19 @@ public class NoisePainter extends PApplet {
 
     @Override
     public void draw() {
-        stroke(color, 255, 255);
+        if (mousePressed) {
+            stroke(color, 255, 255);
 //        System.out.println(sqrt(sq(pmouseX - mouseX) + sq(pmouseY - mouseY)));
 
-        float mouseDist = sqrt(sq(pmouseX - mouseX) + sq(pmouseY - mouseY));
+            float mouseDist = dist(pmouseX, mouseY, pmouseX, pmouseY);
 
 //        strokeWeight(max(map(mouseDist, 0, 150, 40, 3), 0));
-        strokeWeight(noise(frameCount * 0.1f) * 40);
-        line(pmouseX, pmouseY, mouseX, mouseY);
-        color += noise(frameCount * 0.1f) * 10 - 4;
+            strokeWeight(noise(frameCount * 0.1f) * 40);
+            line(pmouseX, pmouseY, mouseX, mouseY);
+            color += noise(frameCount * 0.1f) * 10 - 4;
 
-        color %= 256;
+            color %= 256;
+        }
     }
 
     @Override
