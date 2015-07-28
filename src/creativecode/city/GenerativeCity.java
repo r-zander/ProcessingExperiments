@@ -87,8 +87,10 @@ public class GenerativeCity extends PApplet {
 
         grid.draw();
 
-        for (Car car : cars) {
-            car.draw();
+        if (!debug) {
+            for (Car car : cars) {
+                car.draw();
+            }
         }
 
         grid.step();

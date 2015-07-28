@@ -24,4 +24,8 @@ public class Numbers {
         return RANDOM_NUMBER_GENERATOR.nextInt(high);
     }
 
+    public static boolean isNan(float value) {
+        return value != value;
+    }
+
 }

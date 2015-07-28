@@ -1,6 +1,7 @@
 package creativecode.city;
 
 import static creativecode.city.GenerativeCity.*;
+import static processing.core.PApplet.*;
 import static processing.core.PConstants.*;
 
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ public class Street extends Path {
 
     int                        steps;
 
+    int                        intensity;
+
     Vec                        spawnPointForward;
 
     Vec                        spawnPointBackward;
@@ -29,12 +32,17 @@ public class Street extends Path {
 
     private boolean            spawnCars = true;
 
-    public Street(List<GridCell> nodes, List<DebugPath> path) {
+    public Street(List<GridCell> nodes, List<DebugPath> path, int intensity) {
 
         cleanOutNodes(nodes);
 
         this.path = path;
         this.radius = Grid.cellDimension / 2;
+        this.intensity = round(map(intensity, 1, 100, 90, 8));
+        if (this.intensity < 8) {
+            this.intensity = 8;
+        }
+        System.out.println(intensity + " --> " + this.intensity);
 
 //        shiffmanPath = new ShiffmanPath();
         for (GridCell cell : this.nodes) {
@@ -91,12 +99,10 @@ public class Street extends Path {
 
     public void step() {
         steps++;
-        if (spawnCars && steps % 20 == 0) {
+        if (spawnCars && steps % intensity == 0) {
             spawnCar(spawnPointForward, true);
             spawnCar(spawnPointBackward, false);
-//            float maxspeed = 3;
-//            float maxforce = 0.3f;
-//            vehicles.add(new ShiffmanVehicle(new PVector(spawnPoint.x, spawnPoint.y), maxspeed, maxforce));
+            steps = 0;
         }
     }
 

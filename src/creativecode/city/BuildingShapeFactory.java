@@ -8,31 +8,8 @@ import java.util.ArrayList;
 
 import processing.core.PShape;
 import util.Numbers;
-import creativecode.city.BuildingShapeFactory.BuildingShape;
 
 public class BuildingShapeFactory extends ArrayList<BuildingShape> {
-
-    abstract class BuildingShape {
-
-        float maxArea;
-
-        abstract PShape createShape(float width, float height);
-
-        /**
-         * Complexity of the shape to determine the minimum reasonable size.
-         * 
-         * @return usually the number of vertices
-         */
-        abstract float getComplexity();
-
-        int getProbability() {
-            return 1;
-        }
-
-        boolean canBeRotated() {
-            return true;
-        }
-    }
 
     private static final BuildingShapeFactory INSTANCE      = new BuildingShapeFactory();
 
@@ -221,37 +198,14 @@ public class BuildingShapeFactory extends ArrayList<BuildingShape> {
 
         for (BuildingShape shape : this) {
             shape.maxArea = map(shape.getComplexity(), minComplexity, maxComplexity, 1, 8);
-            System.out.println(shape.getComplexity() + " --> " + shape.maxArea);
         }
     }
 
-    public static PShape newShape(float width, float height) {
-        BuildingShape buildingShape = INSTANCE.getRandomBuildingShape();
-
-        PShape shape = buildingShape.createShape(width, height);
-
-        if (buildingShape.canBeRotated()) {
-            int random = Numbers.random(0, 3);
-            switch (random) {
-                case 1:
-                    shape.translate(width, 0);
-                    break;
-                case 2:
-                    shape.translate(width, height);
-                    break;
-                case 3:
-                    shape.translate(0, height);
-                    break;
-                default:
-                    break;
-            }
-            shape.rotate(random * HALF_PI);
-        }
-
-        return shape;
+    public static BuildingShape getRandomBuildingShape() {
+        return INSTANCE.getRandomBuildingShapeInternal();
     }
 
-    private BuildingShape getRandomBuildingShape() {
+    private BuildingShape getRandomBuildingShapeInternal() {
         // http://stackoverflow.com/a/9330493
         int index = Numbers.random(totalSum) + 1;
         int sum = 0;
