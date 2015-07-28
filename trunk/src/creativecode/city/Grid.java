@@ -159,13 +159,7 @@ public class Grid {
 
         switch (newState) {
             case BUILT:
-                cell.building =
-                        new Building(
-                                x + $.buildPadding,
-                                y + $.buildPadding,
-                                cellDimension,
-                                cellDimension,
-                                $.buildPadding);
+                cell.building = new Building(x, y, cellDimension, cellDimension, $.buildPadding);
                 currentBlock.add(cell);
                 pathFinderGraph.removeNode(cell.id());
                 break;
@@ -311,7 +305,7 @@ public class Grid {
          * Only create streets were actually a path could have been found.
          */
         if (!streetNodes.isEmpty()) {
-            streets.add(new Street(streetNodes, path));
+            streets.add(new Street(streetNodes, path, currentBlock.size()));
         }
 
         /*

@@ -15,25 +15,49 @@ public class Building {
 
     VParticle        particle;
 
+    float            x, y;
+
+    BuildingShape    buildingShape;
+
     PShape           shape;
 
     int              sizeX;
 
     int              sizeY;
 
+    float            padding;
+
     public Building(float x, float y, float width, float height, float padding) {
+        this.buildingShape = BuildingShapeFactory.getRandomBuildingShape();
+        this.padding = padding;
+
+//        if (buildingShape.maxArea > 1) {
+//            float sizeX = $.random(1) * $.random(1) * $.random(1) * buildingShape.maxArea;
+//            this.sizeY = round($.random(1) * buildingShape.maxArea / sizeX);
+//            this.sizeX = round(sizeX);
+//        } else {
+        this.sizeX = 1;
+        this.sizeY = 1;
+//        }
+
         $.fill(BACKGROUND);
         $.stroke(STROKE);
         $.strokeWeight(1);
-        shape = BuildingShapeFactory.newShape(width, height);
+        shape = buildingShape.newShape(width - (2 * padding / sizeX), height - (2 * padding / sizeY));
+        shape.scale(sizeX, sizeY);
+        width *= sizeX;
+        height *= sizeY;
 
-        particle = new VParticle(new Vec(x + width / 2, y + height / 2), 0, max(width, height) / 2);
+        this.x = x + padding;
+        this.y = y + padding;
+
+        particle = new VParticle(new Vec(this.x + width / 2, this.y + height / 2), 0, max(width, height) / 2);
         particle.addBehavior(new BCollision());
         $.physics.addParticle(particle);
     }
 
     void draw() {
-        $.shape(shape, particle.x - particle.radius, particle.y - particle.radius);
+        $.shape(shape, x, y);
     }
 
     public void step() {}
