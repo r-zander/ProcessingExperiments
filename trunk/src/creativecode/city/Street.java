@@ -42,7 +42,7 @@ public class Street extends Path {
         if (this.intensity < 8) {
             this.intensity = 8;
         }
-        System.out.println(intensity + " --> " + this.intensity);
+//        System.out.println(intensity + " --> " + this.intensity);
 
 //        shiffmanPath = new ShiffmanPath();
         for (GridCell cell : this.nodes) {
