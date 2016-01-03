@@ -1,3 +1,5 @@
+package animations;
+
 import processing.core.PApplet;
 
 public class WhitneyChromatic extends PApplet {
@@ -22,32 +24,34 @@ public class WhitneyChromatic extends PApplet {
         BALLS_AND_LINES;
     }
 
-    private static final Mode  MODE               = Mode.LINES;
+    private static final Mode    MODE                = Mode.BALLS;
 
-    private static final int   NUMBER_OF_ELEMENTS = 36;
+    private static final int     NUMBER_OF_ELEMENTS  = 36;
 
-    private static final int   MIN_HUE            = 0;
+    private static final int     MIN_HUE             = 0;
 
-    private static final int   MAX_HUE            = 240;
+    private static final int     MAX_HUE             = 240;
 
-    private static final float MIN_SIZE           = 7;
+    private static final float   MIN_SIZE            = 7;
 
-    private static final float MAX_SIZE           = 30;
+    private static final float   MAX_SIZE            = 30;
 
-    private static final int   BACKGROUND_COLOR   = 0;
+    private static final int     BACKGROUND_COLOR    = 0;
+
+    private static final boolean RERENDER_BACKGROUND = true;
 
     /**
      * In seconds.
      */
-    private static final int   FULL_DURATION      = 120;
+    private static final int     FULL_DURATION       = 120;
 
-    private float              centerX;
+    private float                centerX;
 
-    private float              centerY;
+    private float                centerY;
 
-    private Ball[]             balls              = new Ball[NUMBER_OF_ELEMENTS];
+    private Ball[]               balls               = new Ball[NUMBER_OF_ELEMENTS];
 
-    private int                counter            = 0;
+    private int                  counter             = 0;
 
     @Override
     public boolean sketchFullScreen() {
@@ -88,9 +92,12 @@ public class WhitneyChromatic extends PApplet {
             counter++;
         }
 
-//        background(BACKGROUND_COLOR);
-//        fill(BACKGROUND_COLOR, 20);
-//        rect(0, 0, width, height);
+        if (RERENDER_BACKGROUND) {
+            background(BACKGROUND_COLOR);
+            noStroke();
+            fill(BACKGROUND_COLOR, 20);
+            rect(0, 0, width, height);
+        }
 
         for (int ballIndex = 0; ballIndex < NUMBER_OF_ELEMENTS; ballIndex++) {
 

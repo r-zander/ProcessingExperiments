@@ -6,7 +6,7 @@ public class TreeFractal extends PApplet {
 
     private static final int DEPTH_LIMIT        = 8;
 
-    private static final int NUMBER_OF_BRANCHES = 2;
+    private static final int NUMBER_OF_BRANCHES = 3;
 
     @Override
     public void setup() {

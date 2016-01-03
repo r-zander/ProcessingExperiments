@@ -108,7 +108,7 @@ public class Street extends Path {
 
     private void spawnCar(Vec location, boolean forward) {
         Car car = new Car(location.x, location.y);
-        car.particle.addBehavior(new BPathFollowing2(this, forward));
+        car.particle.addBehavior(new BPathFollowing(this, forward));
         $.cars.add(car);
     }
 

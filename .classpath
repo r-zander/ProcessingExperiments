@@ -47,5 +47,6 @@
 	<classpathentry kind="var" path="PROCESSING_LIBRARIES/hermes/library/guava-r09.jar"/>
 	<classpathentry kind="var" path="PROCESSING_LIBRARIES/hermes/library/javaosc.jar"/>
 	<classpathentry kind="var" path="PROCESSING_LIBRARIES/G4P/library/G4P.jar" sourcepath="/PROCESSING_LIBRARIES/G4P/src"/>
+	<classpathentry kind="var" path="PROCESSING_LIBRARIES/oscP5/library/oscP5.jar" sourcepath="/PROCESSING_LIBRARIES/oscP5/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

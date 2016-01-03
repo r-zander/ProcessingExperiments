@@ -4,6 +4,9 @@ import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import netP5.NetAddress;
+import oscP5.OscMessage;
+import oscP5.OscP5;
 import processing.core.PApplet;
 import punktiert.math.Vec;
 import punktiert.physics.VParticle;
@@ -37,10 +40,26 @@ public class GenerativeCity extends PApplet {
 
     public List<VParticle> particlesToReAdd = new ArrayList<VParticle>();
 
+    OscP5                  osc;
+
+    private NetAddress     remoteLocation;
+
     @Override
     public void setup() {
         $ = this;
         size(displayWidth, displayHeight, P2D);
+
+        /* start oscP5, listening for incoming messages at port 12000 */
+        osc = new OscP5(this, 12000);
+        /*
+         * myRemoteLocation is a NetAddress. a NetAddress takes 2 parameters,
+         * an ip address and a port number. myRemoteLocation is used as parameter in
+         * oscP5.send() when sending osc packets to another computer, device,
+         * application. usage see below. for testing purposes the listening port
+         * and the port of the remote location address are the same, hence you will
+         * send messages back to this sketch.
+         */
+        remoteLocation = new NetAddress("127.0.0.1", 12000);
 
         physics = new VPhysics();
         physics.setBox(new Vec(), new Vec(width, height));
@@ -51,6 +70,15 @@ public class GenerativeCity extends PApplet {
 
         grid = new Grid();
 
+        sendOscMessage(new OscMessage("/generativeCity/onClear"));
+    }
+
+    /* incoming osc message are forwarded to the oscEvent method. */
+    void oscEvent(OscMessage theOscMessage) {
+        /* print the address pattern and the typetag of the received OscMessage */
+        print("### received an osc message.");
+        print(" addrpattern: " + theOscMessage.addrPattern());
+        println(" typetag: " + theOscMessage.typetag());
     }
 
     @Override
@@ -197,6 +225,11 @@ public class GenerativeCity extends PApplet {
                 }
             }
         }
+    }
+
+    public void sendOscMessage(OscMessage message) {
+        /* send the message */
+        osc.send(message, remoteLocation);
     }
 
     class Interaction {
