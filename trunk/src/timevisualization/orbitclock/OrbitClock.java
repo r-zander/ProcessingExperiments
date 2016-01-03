@@ -158,8 +158,8 @@ public class OrbitClock extends PApplet {
 
         }
         strokeWeight(3);
-//        Shapes.sun(this, centerX - a, centerY, width * .1f);
-//        Shapes.moon(this, centerX + a, centerY, width * .05f);
+//        Shapes.sun(this, centerX - 0.3f * width, centerY, width * .1f);
+//        Shapes.moon(this, centerX + 0.3f * width, centerY, width * .05f);
     }
 
     private void drawLemniscate() {

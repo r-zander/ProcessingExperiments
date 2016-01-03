@@ -28,7 +28,7 @@ public class Illuminati extends PApplet {
 
     private int               centerY;
 
-    private IlluminatiMode    mode                   = IlluminatiMode.NORMAL;
+    private IlluminatiMode    mode                   = IlluminatiMode.HALF;
 
     @Override
     public void setup() {

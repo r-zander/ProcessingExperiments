@@ -3,7 +3,7 @@ package seminar09_arrays;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public class SchneeArray extends PApplet {
+public class SnowAnimation extends PApplet {
 
     private static final long serialVersionUID = -56589606646834162L;
 
@@ -15,7 +15,11 @@ public class SchneeArray extends PApplet {
 
         private float        xSpeed, ySpeed;
 
-        private float        speedMod;
+        private float        xSpeedMod;
+
+        private float        xSpeedMultiplier;
+
+//        private float        rotationMod;
 
         private boolean      stopped = false;
 
@@ -24,13 +28,21 @@ public class SchneeArray extends PApplet {
 
             xPos = random(width);
             yPos = random(-height);
-            speedMod = random(TWO_PI);
-            xSpeed = sin(speedMod) * X_SPEED_BASE;
+            xSpeedMod = random(TWO_PI);
+            xSpeedMultiplier = random(0.2f, 1f);
+//            rotationMod = random(1, 4);
+            xSpeed = sin(xSpeedMod) * X_SPEED_BASE * xSpeedMultiplier;
             ySpeed = Y_SPEED_BASE + abs(randomGaussian()) * Y_SPEED_BASE;
         }
 
-        public void moveAnddraw() {
+        public void moveAndDraw() {
+//            pushMatrix();
+//            translate(xPos, yPos);
+//            rotate(xSpeedMod * rotationMod);
+//            translate(-snowImage.width / 2, -snowImage.height / 2);
+//          image(snowImage, 0, 0);
             image(snowImage, xPos, yPos);
+//            popMatrix();
 
             if (stopped) {
                 return;
@@ -44,8 +56,8 @@ public class SchneeArray extends PApplet {
                 }
             }
 
-            speedMod += .03f;
-            xSpeed = sin(speedMod) * X_SPEED_BASE;
+            xSpeedMod += .03f;
+            xSpeed = sin(xSpeedMod) * X_SPEED_BASE * xSpeedMultiplier;
             xPos += xSpeed;
         }
     }
@@ -80,11 +92,11 @@ public class SchneeArray extends PApplet {
         background(0);
 
         for (Flocke flocke : flocken) {
-            flocke.moveAnddraw();
+            flocke.moveAndDraw();
         }
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[] { "--present", SchneeArray.class.getName() });
+        PApplet.main(new String[] { "--present", SnowAnimation.class.getName() });
     }
 }
