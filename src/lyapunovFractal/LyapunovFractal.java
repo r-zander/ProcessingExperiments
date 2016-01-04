@@ -1,4 +1,4 @@
-package fractals.lyapunov;
+package lyapunovFractal;
 
 import processing.core.PApplet;
 import processing.core.PImage;

@@ -1,13 +1,13 @@
-package creativecode.city;
+package creativecode.generativeCity;
 
-import static creativecode.city.GenerativeCity.*;
+import static creativecode.generativeCity.GenerativeCity.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import pathfinder.GraphNode;
-import creativecode.city.GenerativeCity.Colors;
+import creativecode.generativeCity.GenerativeCity.Colors;
 
 public class GridCell extends GraphNode {
 

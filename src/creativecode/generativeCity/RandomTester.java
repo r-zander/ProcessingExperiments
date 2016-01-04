@@ -1,4 +1,4 @@
-package creativecode.city;
+package creativecode.generativeCity;
 
 import java.util.ArrayList;
 import java.util.Collections;

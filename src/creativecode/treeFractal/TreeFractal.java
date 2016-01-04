@@ -1,4 +1,4 @@
-package creativecode.fractals.tree;
+package creativecode.treeFractal;
 
 import processing.core.PApplet;
 

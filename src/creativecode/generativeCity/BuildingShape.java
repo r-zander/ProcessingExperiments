@@ -1,4 +1,4 @@
-package creativecode.city;
+package creativecode.generativeCity;
 
 import static processing.core.PConstants.*;
 import processing.core.PShape;

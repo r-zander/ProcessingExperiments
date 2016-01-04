@@ -1,4 +1,4 @@
-package animations.pepes;
+package animations.animatedAbstractPepe;
 
 import processing.core.PApplet;
 import processing.core.PImage;
