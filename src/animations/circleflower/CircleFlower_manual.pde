@@ -90,4 +90,3 @@
         textAlign(CENTER, BOTTOM);
         text(frameRate, 50, 50);
     }
-
