@@ -107,7 +107,7 @@ public class JavaToPdeConverter {
                          * size and thus override the default smooth inserted here.
                          */
                         if (matchesLine(SIZE_PATTERN, line)) {
-                            writeln(writer, "\t\tsmooth();");
+                            writeln(writer, "        smooth();");
                         }
                         break;
                     case MAIN_METHOD:
@@ -123,7 +123,9 @@ public class JavaToPdeConverter {
                 }
 
             }
-            writer.close();
+            if (writer != null) {
+                writer.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
