@@ -1,4 +1,4 @@
-package creativecode.city;
+package creativecode.generativeCity;
 
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import processing.core.PApplet;
 import punktiert.math.Vec;
 import punktiert.physics.VParticle;
 import punktiert.physics.VPhysics;
-import creativecode.city.GridCell.CellState;
+import creativecode.generativeCity.GridCell.CellState;
 
 public class GenerativeCity extends PApplet {
 

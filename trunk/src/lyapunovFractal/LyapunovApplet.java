@@ -1,4 +1,4 @@
-package fractals.lyapunov;
+package lyapunovFractal;
 
 /*
 

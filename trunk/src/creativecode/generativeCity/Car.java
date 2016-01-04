@@ -1,6 +1,6 @@
-package creativecode.city;
+package creativecode.generativeCity;
 
-import static creativecode.city.GenerativeCity.*;
+import static creativecode.generativeCity.GenerativeCity.*;
 import static processing.core.PConstants.*;
 import punktiert.math.Vec;
 import punktiert.physics.BCollision;

@@ -1,4 +1,4 @@
-package creativecode.city;
+package creativecode.generativeCity;
 
 import oscP5.OscMessage;
 import punktiert.math.Vec;

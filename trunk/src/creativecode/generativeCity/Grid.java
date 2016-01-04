@@ -1,6 +1,6 @@
-package creativecode.city;
+package creativecode.generativeCity;
 
-import static creativecode.city.GenerativeCity.*;
+import static creativecode.generativeCity.GenerativeCity.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +14,8 @@ import pathfinder.GraphSearch_Astar;
 import pathfinder.IGraphSearch;
 import processing.core.PVector;
 import util.Numbers;
-import creativecode.city.GridCell.CellState;
-import creativecode.city.Street.DebugPath;
+import creativecode.generativeCity.GridCell.CellState;
+import creativecode.generativeCity.Street.DebugPath;
 
 public class Grid {
 

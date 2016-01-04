@@ -1,4 +1,4 @@
-package creativecode.city;
+package creativecode.generativeCity;
 
 import punktiert.math.Vec;
 import punktiert.physics.BehaviorInterface;
