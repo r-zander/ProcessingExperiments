@@ -5,11 +5,9 @@ import processing.core.PImage;
 
 public class AnimationFromImage extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
+    private PImage img;
 
-    private PImage            img;
-
-    private int               resizeFactor     = 6;
+    private int    resizeFactor = 6;
 
     private class Vector {
 

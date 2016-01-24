@@ -8,14 +8,12 @@ import util.structures.FloatRange;
 
 public class LyapunovFractal extends PApplet {
 
-    private static final long   serialVersionUID = -987763235416578283L;
-
-    private static final String SEQUENCE         = "BBBBBBAAAAAA";
+    private static final String SEQUENCE       = "BBBBBBAAAAAA";
 
     // = "AAAAAABBBBBB";
     // = "BBBBBBAAAAAA";
 
-    private static final char[] SEQUENCE_ARRAY   = SEQUENCE.toUpperCase().toCharArray();
+    private static final char[] SEQUENCE_ARRAY = SEQUENCE.toUpperCase().toCharArray();
 
     private static class Section {
 

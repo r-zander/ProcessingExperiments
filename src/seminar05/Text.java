@@ -5,9 +5,7 @@ import processing.core.PFont;
 
 public class Text extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
-
-    PFont                     font;
+    PFont font;
 
     @Override
     public void setup() {

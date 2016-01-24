@@ -5,9 +5,7 @@ import processing.core.PGraphics;
 
 public class CreateGraphics extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
-
-    PGraphics                 pg;
+    PGraphics pg;
 
     @Override
     public void setup() {

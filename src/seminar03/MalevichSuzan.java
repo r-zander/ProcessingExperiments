@@ -1,9 +1,8 @@
 package seminar03;
+
 import processing.core.PApplet;
 
 public class MalevichSuzan extends PApplet {
-
-    private static final long serialVersionUID = -56589606646834162L;
 
     @Override
     public void setup() {

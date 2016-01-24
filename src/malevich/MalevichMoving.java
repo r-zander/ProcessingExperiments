@@ -5,11 +5,9 @@ import util.Colors;
 
 public class MalevichMoving extends PApplet {
 
-    private static final long  serialVersionUID = -56589606646834162L;
+    private static final float SPEED_BASE   = 15;
 
-    private static final float SPEED_BASE       = 15;
-
-    private int                imageCounter     = 1;
+    private int                imageCounter = 1;
 
     private abstract class Element {
 

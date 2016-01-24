@@ -4,17 +4,15 @@ import processing.core.PApplet;
 
 public class Pong extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
+    private static final int BACKGROUND_COLOR = 0xFF000000;
 
-    private static final int  BACKGROUND_COLOR = 0xFF000000;
+    private static final int FOREGROUND_COLOR = 0xFF00FF00;
 
-    private static final int  FOREGROUND_COLOR = 0xFF00FF00;
+    private static final int BASE_SPEED       = 20;
 
-    private static final int  BASE_SPEED       = 20;
+    private int              centerX;
 
-    private int               centerX;
-
-    private int               centerY;
+    private int              centerY;
 
     private class Board {
 

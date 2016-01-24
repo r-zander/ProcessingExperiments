@@ -5,9 +5,7 @@ import processing.core.PFont;
 
 public class DigitalUhr extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
-
-    PFont                     uhrFont;
+    PFont uhrFont;
 
     @Override
     public void setup() {

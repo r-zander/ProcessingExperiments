@@ -1,9 +1,12 @@
+package pdeConverter;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.Format;
 import java.util.ArrayList;
@@ -13,9 +16,21 @@ import java.util.regex.Pattern;
 
 public class JavaToPdeConverter {
 
+    /**
+     * Set to <code>null</code> to output the converted files in the folder of the java file.
+     */
+    private File       outputFolder   = new File("D:/xampp/htdocs/processingjs");
+
     private int        foundJavaFiles;
 
     private List<File> convertedFiles = new ArrayList<File>();
+
+    public JavaToPdeConverter(File sourceDirectory) throws IOException {
+        if (sourceDirectory.exists() == false) {
+            throw new RuntimeException("src directory not found");
+        }
+        handleDirectory(sourceDirectory);
+    }
 
     private void handleDirectory(File directory) throws IOException {
         if (directory.isDirectory() == false) {
@@ -31,6 +46,8 @@ public class JavaToPdeConverter {
             }
         }
     }
+
+    private static final Pattern IGNORE_SKETCH_PATTERN     = Pattern.compile("\\@IgnoreSketch");
 
     private static final Pattern CLASS_PATTERN             = Pattern.compile("public class .+ extends PApplet \\{");
 
@@ -72,6 +89,14 @@ public class JavaToPdeConverter {
                         /*
                          * 1st: make sure it's actually a processing sketch
                          */
+
+                        if (matchesLine(IGNORE_SKETCH_PATTERN, line)) {
+                            /*
+                             * Ingore the complete file
+                             */
+                            return;
+                        }
+
                         if (matchesLine(CLASS_PATTERN, line)) {
                             writer = newPdeFileWriter(javaFile);
                             convertedFiles.add(javaFile);
@@ -125,6 +150,7 @@ public class JavaToPdeConverter {
             }
             if (writer != null) {
                 writer.close();
+                createHtmlFile(javaFile);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -152,10 +178,51 @@ public class JavaToPdeConverter {
         writeln(writer, " */");
     }
 
-    private static BufferedWriter newPdeFileWriter(File javaFile) throws IOException {
+    private BufferedWriter newFileWriter(File javaFile, String fileEnding) throws IOException {
         String absolutePath = javaFile.getAbsolutePath();
-        absolutePath = absolutePath.substring(0, absolutePath.length() - 5) + ".pde";
-        return new BufferedWriter(new FileWriter(absolutePath));
+
+        if (outputFolder != null) {
+            absolutePath = outputFolder.getAbsolutePath() + File.separator + javaFile.getName();
+        }
+
+        absolutePath = absolutePath.substring(0, absolutePath.length() - 5) + "." + fileEnding;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(absolutePath));
+        return writer;
+    }
+
+    private BufferedWriter newPdeFileWriter(File javaFile) throws IOException {
+        return newFileWriter(javaFile, "pde");
+    }
+
+    private void createHtmlFile(File javaFile) throws IOException {
+        BufferedWriter writer = newFileWriter(javaFile, "html");
+
+        BufferedReader htmlTemplate =
+                new BufferedReader(new InputStreamReader(
+                        JavaToPdeConverter.class.getResourceAsStream("ProcessingJsTemplate.html"),
+                        "UTF-8"));
+        try {
+            String line;
+            while ((line = htmlTemplate.readLine()) != null) {
+                String name = javaFile.getName();
+                line = line.replace("${sketchFile}", name.substring(0, name.length() - 5) + ".pde");
+                writeln(writer, line);
+            }
+            if (writer != null) {
+                writer.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (htmlTemplate != null) {
+                try {
+                    htmlTemplate.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 
     private static boolean matchesLine(Pattern patternToUse, String line) {
@@ -171,12 +238,12 @@ public class JavaToPdeConverter {
     }
 
     public static void main(String[] args) throws IOException {
-        File sourceDirectory = new File("src");
+//        File sourceDirectory = new File("src");
+        File sourceDirectory = new File("src/timevisualization/orbitclock");
         if (sourceDirectory.exists() == false) {
             throw new RuntimeException("src directory not found");
         }
-        JavaToPdeConverter converter = new JavaToPdeConverter();
-        converter.handleDirectory(sourceDirectory);
+        JavaToPdeConverter converter = new JavaToPdeConverter(sourceDirectory);
         converter.outputStatistic();
     }
 }

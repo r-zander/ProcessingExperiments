@@ -10,13 +10,13 @@ import punktiert.physics.VParticle;
  * 
  * @author rza
  */
-public class BCollision implements BehaviorInterface {
+public class BCollisionWithOsc implements BehaviorInterface {
 
     float limit;
 
     float offset;
 
-    public BCollision() {
+    public BCollisionWithOsc() {
         limit = 0.2f;
         offset = 0;
     }
@@ -24,7 +24,7 @@ public class BCollision implements BehaviorInterface {
     /**
      * proportional offset of the particle radius for offset (radius*(1-offset))
      */
-    public BCollision(float offset) {
+    public BCollisionWithOsc(float offset) {
         limit = 0.2f;
         this.offset = offset;
     }
@@ -55,14 +55,13 @@ public class BCollision implements BehaviorInterface {
     }
 
     public void onCollision(VParticle p, Vec force) {
-        /* in the following different ways of creating osc messages are shown by example */
         OscMessage message = new OscMessage("/generativeCity/onCollision");
 
         message.add(p.x());
         message.add(p.y());
         message.add(force.mag());
 
-        GenerativeCity.$.sendOscMessage(message);
+        GenerativeCityWithOsc.$.sendOscMessage(message);
     }
 
     public float getLimit() {
@@ -77,7 +76,7 @@ public class BCollision implements BehaviorInterface {
         this.offset = offset;
     }
 
-    public BCollision setLimit(float limit) {
+    public BCollisionWithOsc setLimit(float limit) {
         this.limit = limit;
         return this;
     }

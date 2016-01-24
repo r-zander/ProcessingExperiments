@@ -4,13 +4,11 @@ import processing.core.PApplet;
 
 public class TrianglePattern extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
+    float breiteM, hoeheM;
 
-    float                     breiteM, hoeheM;
+    int   xNum = 3;
 
-    int                       xNum             = 3;
-
-    int                       yNum             = 3;
+    int   yNum = 3;
 
     @Override
     public void setup() {

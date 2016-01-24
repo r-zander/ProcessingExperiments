@@ -7,23 +7,21 @@ import processing.core.PApplet;
 
 public class ZR_Logo extends PApplet {
 
-    static final float        STROKE_WEIGHT             = 10;
+    static final float STROKE_WEIGHT             = 10;
 
-    static final float        STROKE_WEIGHT_CONSTRUCTED = 2;
+    static final float STROKE_WEIGHT_CONSTRUCTED = 2;
 
-    private static final long serialVersionUID          = -56589606646834162L;
+    private int        frameCounter              = 0;
 
-    private int               frameCounter              = 0;
+    private int        finishFrame;
 
-    private int               finishFrame;
+    static final int   DEFAULT_FRAME_COUNT       = 120;
 
-    static final int          DEFAULT_FRAME_COUNT       = 120;
+    static final float DRAW_SPEED                = 8;  // Pixel per frame;
 
-    static final float        DRAW_SPEED                = 8;                  // Pixel per frame;
+    private float      centerX;
 
-    private float             centerX;
-
-    private float             centerY;
+    private float      centerY;
 
     /**
      * Eigenschaften des Logo/Icons - gekapselt zur besseren Übersicht.
