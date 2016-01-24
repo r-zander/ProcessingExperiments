@@ -5,9 +5,7 @@ import processing.core.PImage;
 
 public class Image extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
-
-    PImage                    lol;
+    PImage lol;
 
     @Override
     public void setup() {

@@ -4,8 +4,6 @@ import processing.core.PApplet;
 
 public class MalevichRobot extends MalevichBasic {
 
-    private static final long serialVersionUID = -56589606646834162L;
-
     @Override
     public void setup() {
         squareColor = (int) random(0, 255);

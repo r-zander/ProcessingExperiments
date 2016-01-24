@@ -7,8 +7,6 @@ import processing.core.PApplet;
 
 public class ChaosStar extends PApplet {
 
-    private static final long  serialVersionUID   = -987763235416578283L;
-
     private static final int   MAX_RANGE          = 300;
 
     private static final int   MIN_RANGE          = 100;

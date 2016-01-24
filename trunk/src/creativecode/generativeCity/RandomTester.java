@@ -3,8 +3,10 @@ package creativecode.generativeCity;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import pdeConverter.IgnoreSketch;
 import processing.core.PApplet;
 
+@IgnoreSketch
 public class RandomTester extends PApplet {
 
     @Override

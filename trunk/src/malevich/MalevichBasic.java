@@ -1,21 +1,19 @@
 package malevich;
 
-import static util.Colors.randomColor;
+import static util.Colors.*;
 import processing.core.PApplet;
 
 public class MalevichBasic extends PApplet {
 
-    private static final long serialVersionUID  = -56589606646834162L;
+    protected int squareColor       = color(245, 188, 0);
 
-    protected int             squareColor       = color(245, 188, 0);
+    protected int smallElementColor = color(137, 77, 4);
 
-    protected int             smallElementColor = color(137, 77, 4);
+    protected int quadColor         = color(5, 8, 149);
 
-    protected int             quadColor         = color(5, 8, 149);
+    protected int bgColor           = color(242, 241, 237);
 
-    protected int             bgColor           = color(242, 241, 237);
-
-    protected int             rectColor         = color(5, 188, 0);
+    protected int rectColor         = color(5, 188, 0);
 
     @Override
     public void setup() {

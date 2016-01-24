@@ -4,8 +4,6 @@ import processing.core.PApplet;
 
 public class MultiplicationTable extends PApplet {
 
-    private static final long serialVersionUID = -987763235416578283L;
-
     @Override
     public void setup() {
         size(displayWidth, displayHeight);

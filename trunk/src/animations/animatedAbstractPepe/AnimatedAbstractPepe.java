@@ -5,15 +5,13 @@ import processing.core.PImage;
 
 public class AnimatedAbstractPepe extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
+    private PImage  img;
 
-    private PImage            img;
+    private int     column;
 
-    private int               column;
+    private boolean forward    = true;
 
-    private boolean           forward          = true;
-
-    private boolean           manualMode       = false;
+    private boolean manualMode = false;
 
     @Override
     public void setup() {

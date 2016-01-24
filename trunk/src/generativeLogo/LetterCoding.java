@@ -8,19 +8,17 @@ import util.TwoDimensional;
 
 public class LetterCoding extends PApplet {
 
-    private static final long serialVersionUID = -987763235416578283L;
+    int                    bgColor    = 0xFFFFFFFF;
 
-    int                       bgColor          = 0xFFFFFFFF;
+    int                    fgColor    = 0xFF000000;
 
-    int                       fgColor          = 0xFF000000;
+    final int              gridHeight = 400;
 
-    final int                 gridHeight       = 400;
+    final int              gridWidth  = 400;
 
-    final int                 gridWidth        = 400;
+    int                    color;
 
-    int                       color;
-
-    Map<Character, Letter>    alphabet;
+    Map<Character, Letter> alphabet;
 
     class Letter {
 

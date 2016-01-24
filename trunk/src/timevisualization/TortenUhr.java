@@ -8,9 +8,7 @@ import processing.core.PImage;
 
 public class TortenUhr extends PApplet {
 
-    private static final long    serialVersionUID = -56589606646834162L;
-
-    private Map<Integer, PImage> images           = new HashMap<Integer, PImage>();
+    private Map<Integer, PImage> images = new HashMap<Integer, PImage>();
 
     @Override
     public void setup() {

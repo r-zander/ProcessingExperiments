@@ -10,8 +10,6 @@ import util.structures.Point;
 
 public class ShortestDistance extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
-
     private static class PointPair {
 
         int index1;

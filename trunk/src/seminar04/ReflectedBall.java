@@ -8,8 +8,6 @@ import util.TwoDimensional;
 
 public class ReflectedBall extends PApplet {
 
-    private static final long  serialVersionUID = -56589606646834162L;
-
     private static final int   BACKGROUND_COLOR = 0;
 
     private int                ballWidth        = 100;

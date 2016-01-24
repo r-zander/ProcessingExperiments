@@ -1,9 +1,8 @@
 package seminar03;
+
 import processing.core.PApplet;
 
 public class MyProcessingSketch extends PApplet {
-
-    private static final long serialVersionUID = -1530381177827393671L;
 
     @Override
     public void setup() {

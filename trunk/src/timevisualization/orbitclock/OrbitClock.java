@@ -8,8 +8,6 @@ import util.structures.Point;
 
 public class OrbitClock extends PApplet {
 
-    private static final long serialVersionUID = -56589606646834162L;
-
     private static enum ColorMode {
         RANDOM,
         BLACK_WHITE,
