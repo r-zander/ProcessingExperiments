@@ -1,12 +1,11 @@
 package timevisualization.orbitclock;
 
-import static processing.core.PApplet.cos;
-import static processing.core.PApplet.sin;
-import static processing.core.PApplet.sq;
-import static util.Numbers.SQRT_2;
+import static processing.core.PApplet.*;
 import util.structures.Point;
 
 public class LemniscateOfBernoulli extends CurveFunction {
+
+    public static final float SQRT_2 = (float) sqrt(2);
 
     public LemniscateOfBernoulli(float resizeFactor) {
         super(resizeFactor);
@@ -14,11 +13,11 @@ public class LemniscateOfBernoulli extends CurveFunction {
 
     @Override
     public Point calculate(float angle) {
-        float sin = sin(angle);
-        float divisor = sq(sin) + 1;
+        float sin1 = sin(angle);
+        float divisor = sq(sin1) + 1;
         float dividend = resizeFactor * SQRT_2 * cos(angle);
         float x = dividend / divisor;
-        float y = (dividend * sin) / divisor;
+        float y = (dividend * sin1) / divisor;
         return new Point(x, y);
     }
 

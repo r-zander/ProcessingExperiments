@@ -4,29 +4,29 @@ import processing.core.PApplet;
 
 public class Illuminati extends PApplet {
 
-    private int            outerCircleColor       = color(0, 60, 191);
+    private int   outerCircleColor       = color(0, 60, 191);
 
-    private float          outerCircleStarteAngle = radians(150);
+    private float outerCircleStarteAngle = radians(150);
 
-    private float          outerCircleRadius;
+    private float outerCircleRadius;
 
-    private int            eyeColor               = color(210, 33, 40);
+    private int   eyeColor               = color(210, 33, 40);
 
-    private int            pyramideColor          = color(58, 191, 0);
+    private int   pyramideColor          = color(58, 191, 0);
 
-    private float          pyramideStartX;
+    private float pyramideStartX;
 
-    private float          pyramideStartY;
+    private float pyramideStartY;
 
-    private float          pyramideBaseWidth;
+    private float pyramideBaseWidth;
 
-    private int            frameCounter           = 0;
+    private int   frameCounter           = 0;
 
-    private int            centerX;
+    private int   centerX;
 
-    private int            centerY;
+    private int   centerY;
 
-    private IlluminatiMode mode                   = IlluminatiMode.HALF;
+    private int   mode                   = IlluminatiMode.HALF;
 
     @Override
     public void setup() {
@@ -92,7 +92,7 @@ public class Illuminati extends PApplet {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", Illuminati.class.getName() });
     }
 }

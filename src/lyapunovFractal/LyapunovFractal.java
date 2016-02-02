@@ -37,12 +37,19 @@ public class LyapunovFractal extends PApplet {
         }
     }
 
-    private static enum LogisticFunction {
-        SQUARE,
-        SINUS;
+    /**
+     * Enum
+     */
+    private static class LogisticFunction {
+
+        // @formatter:off
+        public static final int
+            SQUARE = 0,
+            SINUS = 1;
+        // @formatter:on
     }
 
-    private static final LogisticFunction USED_LOGISTIC_FUNCTION = LogisticFunction.SQUARE;
+    private static final int USED_LOGISTIC_FUNCTION = LogisticFunction.SQUARE;
 
 //    private static final float MIN_MULTIPLIER = 1;
 //
@@ -50,11 +57,11 @@ public class LyapunovFractal extends PApplet {
 
 //    private static final float  MULTIPLIER_STEPS = .1f;
 
-    private static final int              ITERATIONS             = 60;
+    private static final int ITERATIONS             = 60;
 
-    int                                   bgColor                = 0xFF000000;
+    int                      bgColor                = 0xFF000000;
 
-    int                                   animationFrame         = 0;
+    int                      animationFrame         = 0;
 
     @Override
     public void setup() {
@@ -117,14 +124,14 @@ public class LyapunovFractal extends PApplet {
                     }
 
                     switch (USED_LOGISTIC_FUNCTION) {
-                        case SINUS:
+                        case LogisticFunction.SINUS:
                             double sin = ApproximationMath.sin(xn + rn);
                             xn = multiplier * sin * sin;
                             sum +=
                                     ApproximationMath.log((float) Math.abs(2 * multiplier * sin
                                             * ApproximationMath.cos(xn + rn)));
                             break;
-                        case SQUARE:
+                        case LogisticFunction.SQUARE:
                             xn = rn * xn * (1 - xn);
                             if (i > skippedIterations) {
                                 sum += ApproximationMath.log((float) Math.abs(rn * (1 - 2 * xn)));
@@ -253,7 +260,7 @@ public class LyapunovFractal extends PApplet {
         return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", LyapunovFractal.class.getName() });
     }
 }

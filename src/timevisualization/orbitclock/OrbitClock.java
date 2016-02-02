@@ -1,128 +1,81 @@
 package timevisualization.orbitclock;
 
 import processing.core.PApplet;
-import util.Axis;
-import util.Colors;
+import timevisualization.orbitclock.TimeShape.MillisShape;
+import timevisualization.orbitclock.TimeShape.MinutesShape;
+import timevisualization.orbitclock.TimeShape.SecondsShape;
+// @Ignore
+import util.Gradient;
+import util.Gradient.Axis;
 import util.TwoDimensional;
 import util.structures.Point;
 
 public class OrbitClock extends PApplet {
 
-    private static enum ColorMode {
-        RANDOM,
-        BLACK_WHITE,
-        BLACK_ALPHA,
-        YELLOW_BLUE;
-    }
+    /**
+     * Currently running instance
+     */
+    public static OrbitClock $;
 
-    private static final ColorMode COLOR_MODE = ColorMode.BLACK_ALPHA;
+    private static final int COLOR_MODE = ColorMode.BLACK_ALPHA;
 
-    private CurveFunction          function;
+    private static final int STEPS      = 240;
 
-    private static final int       STEPS      = 240;
+    private CurveFunction    curveFunction;
 
-    private static int             YELLOW;
+    // @Ignore 3
+    private Gradient         gradient;
 
-    private static int             BLUE;
+    private static int       YELLOW;
 
-    private float                  centerX;
+    private static int       BLUE;
 
-    private float                  centerY;
+    private float            centerX;
 
-    private static enum Mode {
-        ORB,
-        ORBIT;
-    }
+    private float            centerY;
 
-    private abstract class TimeShape {
+    private TimeShape        minutesShape;
 
-        float radius;
+    private TimeShape        secondsShape;
 
-        int   steps;
-
-        float width;
-
-        Mode  mode;
-
-        public void draw(float x, float y) {
-            float startAngle = getStartAngle();
-            float angleSteps = TWO_PI / steps;
-            switch (mode) {
-                case ORB:
-                    setFill(steps, steps);
-                    noStroke();
-                    ellipse(x + cos(startAngle) * radius, y + sin(startAngle) * radius, 10 * width, 10 * width);
-                    break;
-                case ORBIT:
-                    noFill();
-                    strokeWeight(width);
-                    for (int i = 0; i < steps; i++) {
-                        float angle = startAngle - angleSteps * i;
-                        setStroke(i, steps);
-                        arc(x, y, radius * 2, radius * 2, angle, angle + angleSteps);
-                    }
-            }
-        }
-
-        protected abstract float getStartAngle();
-    }
-
-    private TimeShape minutesShape;
-
-    private TimeShape secondsShape;
-
-    private TimeShape millisShape;
+    private TimeShape        millisShape;
 
     @Override
     public void setup() {
         size(displayWidth, displayHeight);
+        noSmooth();
+
+        $ = this;
 
         centerX = width / 2;
         centerY = height / 2;
 
-        function = new LemniscateOfBernoulli(width * .30f);
+        curveFunction = new LemniscateOfBernoulli(width * .30f);
 //        function = new Hippopede(width * .2f, 1f, 1f);
 
+        // @Ignore 2
         YELLOW = color(255, 192, 0);
         BLUE = color(0, 0, 192);
 
         strokeCap(SQUARE);
 
-        minutesShape = new TimeShape() {
-
-            @Override
-            protected float getStartAngle() {
-                return map(minute() + second() / 60f, 0, 60, PI * -.5f, PI * 1.5f);
-            }
-        };
+        minutesShape = new MinutesShape();
         minutesShape.radius = width * .05f;
         minutesShape.steps = 60;
         minutesShape.width = 10;
-        minutesShape.mode = Mode.ORBIT;
+        minutesShape.mode = OrbMode.ORBIT;
 
-        secondsShape = new TimeShape() {
-
-            @Override
-            protected float getStartAngle() {
-                return map(second(), 0, 60, PI * -.5f, PI * 1.5f);
-            }
-        };
+        secondsShape = new SecondsShape();
         secondsShape.radius = minutesShape.radius * .5f;
         secondsShape.steps = 60;
         secondsShape.width = minutesShape.width * .2f;
-        secondsShape.mode = Mode.ORBIT;
+        secondsShape.mode = OrbMode.ORBIT;
 
-        millisShape = new TimeShape() {
-
-            @Override
-            protected float getStartAngle() {
-                return map(System.currentTimeMillis() % 1000, 0, 1000, PI * -.5f, PI * 1.5f);
-            }
-        };
+        millisShape = new MillisShape();
         millisShape.radius = secondsShape.radius * .4f;
         millisShape.steps = 100;
         millisShape.width = secondsShape.width * .5f;
-        millisShape.mode = Mode.ORBIT;
+        millisShape.mode = OrbMode.ORBIT;
     }
 
     @Override
@@ -134,7 +87,7 @@ public class OrbitClock extends PApplet {
 
     private void drawBackground() {
         switch (COLOR_MODE) {
-            case RANDOM:
+            case ColorMode.RANDOM:
                 for (int i = 0; i <= 0 + width; i++) {
                     stroke(color(random(255), random(255), random(255)));
                     line(i, 0, i, height);
@@ -142,13 +95,20 @@ public class OrbitClock extends PApplet {
                 stroke(color(random(255), random(255), random(255)));
                 fill(color(random(255), random(255), random(255)));
                 break;
-            case BLACK_ALPHA:
-            case BLACK_WHITE:
-                Colors.drawGradient(this, 0, 0, width, height, YELLOW, BLUE, Axis.X_AXIS);
+            case ColorMode.BLACK_ALPHA:
+            case ColorMode.BLACK_WHITE:
+                background(0, 0);
+
+                // @Ignore 4
+                if (gradient == null) {
+                    gradient = new Gradient(this, 0, 0, width, height, YELLOW, BLUE, Axis.X_AXIS);
+                }
+                gradient.draw();
+
                 noFill();
                 stroke(0);
                 break;
-            case YELLOW_BLUE:
+            case ColorMode.YELLOW_BLUE:
                 background(255);
                 noFill();
                 stroke(0);
@@ -164,14 +124,14 @@ public class OrbitClock extends PApplet {
         noSmooth();
         float angle;
         switch (COLOR_MODE) {
-            case YELLOW_BLUE:
+            case ColorMode.YELLOW_BLUE:
                 angle = PI;
                 break;
             default:
                 angle = hour2angle(hour(), minute());
 
         }
-        Point startPoint = function.calculate(angle);
+        Point startPoint = curveFunction.calculate(angle);
         float startX = centerX + startPoint.x;
         float startY = centerY + startPoint.y;
         float lastX = startX;
@@ -182,7 +142,7 @@ public class OrbitClock extends PApplet {
         float lastY2 = -1;
         for (int currentStep = 0; currentStep <= STEPS; currentStep++) {
             angle += TWO_PI / STEPS;
-            Point point = function.calculate(angle);
+            Point point = curveFunction.calculate(angle);
             float x = centerX + point.x;
             float y = centerY + point.y;
 
@@ -221,9 +181,9 @@ public class OrbitClock extends PApplet {
             lastY = y;
         }
         switch (COLOR_MODE) {
-            case YELLOW_BLUE:
+            case ColorMode.YELLOW_BLUE:
                 angle = hour2angle(hour(), minute());
-                Point point = function.calculate(angle);
+                Point point = curveFunction.calculate(angle);
                 startX = centerX + point.x;
                 startY = centerY + point.y;
                 break;
@@ -237,34 +197,34 @@ public class OrbitClock extends PApplet {
     private void drawFPS() {
         if (mousePressed) {
             fill(0);
-            text(String.format("%.1f / %.1f", frameRate, frameRateTarget), width - 100, height - 100);
+            text(String.format("%.1f", frameRate), width - 100, height - 100);
         }
     }
 
-    private void setStroke(float currentStep, float steps) {
+    void setStroke(float currentStep, float steps) {
         switch (COLOR_MODE) {
-            case RANDOM:
+            case ColorMode.RANDOM:
                 stroke(color(random(255), random(255), random(255)));
                 break;
-            case BLACK_WHITE:
+            case ColorMode.BLACK_WHITE:
                 stroke(255 * (currentStep / steps), 255);
                 break;
-            case YELLOW_BLUE:
-            case BLACK_ALPHA:
+            case ColorMode.YELLOW_BLUE:
+            case ColorMode.BLACK_ALPHA:
                 stroke(0, 255 * (1 - currentStep / steps));
                 break;
         }
     }
 
-    private void setFill(float currentStep, float steps) {
+    void setFill(float currentStep, float steps) {
         switch (COLOR_MODE) {
-            case RANDOM:
+            case ColorMode.RANDOM:
                 fill(color(random(255), random(255), random(255)));
                 break;
-            case BLACK_WHITE:
+            case ColorMode.BLACK_WHITE:
                 fill(255 * (currentStep / steps), 255);
                 break;
-            case BLACK_ALPHA:
+            case ColorMode.BLACK_ALPHA:
             default:
                 fill(0, 255 * (1 - currentStep / steps));
                 break;
@@ -301,7 +261,7 @@ public class OrbitClock extends PApplet {
         return map(hours + minutes / 60f, 0, 24, TWO_PI, 0);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", OrbitClock.class.getName() });
     }
 }

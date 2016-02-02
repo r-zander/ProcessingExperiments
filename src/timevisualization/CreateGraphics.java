@@ -23,7 +23,7 @@ public class CreateGraphics extends PApplet {
         image(pg, 50, 50);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", CreateGraphics.class.getName() });
     }
 }

@@ -79,7 +79,7 @@ public class MalevichBasic extends PApplet {
         quad(371, 615, 488, 525, 506, 549, 388, 640);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", MalevichBasic.class.getName() });
     }
 }

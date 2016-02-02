@@ -22,7 +22,7 @@ public class MultiplicationTable extends PApplet {
     @Override
     public void draw() {}
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", MultiplicationTable.class.getName() });
     }
 }

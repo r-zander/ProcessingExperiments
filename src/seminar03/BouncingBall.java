@@ -25,7 +25,7 @@ public class BouncingBall extends PApplet {
         ellipse(200, 200 + abs(sin) * 300, 50, 50);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", BouncingBall.class.getName() });
     }
 }

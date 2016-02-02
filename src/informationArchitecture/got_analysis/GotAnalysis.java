@@ -142,7 +142,7 @@ public class GotAnalysis extends PApplet {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", GotAnalysis.class.getName() });
     }
 }

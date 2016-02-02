@@ -7,14 +7,14 @@ import java.util.List;
 import netP5.NetAddress;
 import oscP5.OscMessage;
 import oscP5.OscP5;
-import pdeConverter.IgnoreSketch;
+import pdeConverter.IgnoreClass;
 import processing.core.PApplet;
 import punktiert.math.Vec;
 import punktiert.physics.VParticle;
 import punktiert.physics.VPhysics;
 import creativecode.generativeCity.GridCell.CellState;
 
-@IgnoreSketch
+@IgnoreClass
 public class GenerativeCityWithOsc extends PApplet {
 
     /**
@@ -187,7 +187,7 @@ public class GenerativeCityWithOsc extends PApplet {
         text(frameRate, 50, 50);
     }
 
-    private void changeGrid(CellState newState) {
+    private void changeGrid(int newState) {
 
         int intensity = currentInteraction.frames;
 
@@ -281,7 +281,7 @@ public class GenerativeCityWithOsc extends PApplet {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", GenerativeCityWithOsc.class.getName() });
     }
 }

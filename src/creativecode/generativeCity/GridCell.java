@@ -11,16 +11,23 @@ import creativecode.generativeCity.GenerativeCity.Colors;
 
 public class GridCell extends GraphNode {
 
-    enum CellState {
-        EMPTY,
-        BUILT,
-        STREET,
-        BLOCKED;
+    /**
+     * Enum
+     */
+    class CellState {
+
+        // @formatter:off
+        public static final int
+            EMPTY = 0,
+            BUILT = 1,
+            STREET = 2,
+            BLOCKED = 3;
+        // @formatter:on
     }
 
     private static final AtomicInteger SEQUENCER         = new AtomicInteger(1);
 
-    CellState                          state;
+    int                                state;
 
     Building                           building;
 

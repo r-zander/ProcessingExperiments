@@ -35,7 +35,7 @@ public class MonroePixels extends PApplet {
 
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", MonroePixels.class.getName() });
     }
 }

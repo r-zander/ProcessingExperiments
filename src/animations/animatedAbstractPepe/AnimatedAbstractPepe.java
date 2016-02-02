@@ -16,8 +16,9 @@ public class AnimatedAbstractPepe extends PApplet {
     @Override
     public void setup() {
 //        img = loadImage("pepes/sad.png");
-        img = loadImage("pepes/hello-kitty.jpg");
+//        img = loadImage("pepes/hello-kitty.jpg");
 //        img = loadImage("pepes/cocktail.jpg");
+        img = loadImage("pepes/batman.png");
 
 //        int size = min(displayHeight, displayWidth);
         size(img.height, img.height * 2);
@@ -60,7 +61,7 @@ public class AnimatedAbstractPepe extends PApplet {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", AnimatedAbstractPepe.class.getName() });
     }
 }
