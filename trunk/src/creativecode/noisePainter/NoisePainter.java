@@ -37,7 +37,7 @@ public class NoisePainter extends PApplet {
         background(255);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", NoisePainter.class.getName() });
     }
 }

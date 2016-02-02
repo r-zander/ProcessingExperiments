@@ -26,7 +26,7 @@ public class Image extends PApplet {
         rect(width / 2, height / 2, lol.width, lol.height);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", Image.class.getName() });
     }
 }

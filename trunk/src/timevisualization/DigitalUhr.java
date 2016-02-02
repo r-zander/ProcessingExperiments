@@ -27,7 +27,7 @@ public class DigitalUhr extends PApplet {
         text(aktuelleZeit, width / 2, height / 2);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", DigitalUhr.class.getName() });
     }
 }

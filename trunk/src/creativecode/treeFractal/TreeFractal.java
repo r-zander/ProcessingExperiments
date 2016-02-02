@@ -80,7 +80,7 @@ public class TreeFractal extends PApplet {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", TreeFractal.class.getName() });
     }
 }

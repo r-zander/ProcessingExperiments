@@ -39,7 +39,7 @@ public class TrianglePattern extends PApplet {
         triangle(mx + breiteM / 2, my + hoeheM / 2, mx, my + d, mx + d, my);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", TrianglePattern.class.getName() });
     }
 }

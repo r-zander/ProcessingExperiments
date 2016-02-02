@@ -135,7 +135,7 @@ public class ChaosStar extends PApplet {
         return a;
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", ChaosStar.class.getName() });
     }
 }

@@ -178,7 +178,7 @@ public class WorldDevelopment extends PApplet {
         year = slider.getValueI();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", WorldDevelopment.class.getName() });
     }
 }

@@ -249,7 +249,7 @@ public class TwitterTrends extends PApplet {
         return new PVector(x, y);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { TwitterTrends.class.getName() });
     }
 }

@@ -32,7 +32,7 @@ public class Text extends PApplet {
         text("Apfel\nBanane\nMelone", width / 2, height / 2);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", Text.class.getName() });
     }
 }

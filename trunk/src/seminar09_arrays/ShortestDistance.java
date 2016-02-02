@@ -108,7 +108,7 @@ public class ShortestDistance extends PApplet {
 
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", ShortestDistance.class.getName() });
     }
 }

@@ -2,6 +2,11 @@ package timevisualization.orbitclock;
 
 import util.structures.Point;
 
+/**
+ * Base for all possible curve functions.
+ * 
+ * @author rza
+ */
 public abstract class CurveFunction {
 
     float resizeFactor;

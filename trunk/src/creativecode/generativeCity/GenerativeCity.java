@@ -156,7 +156,7 @@ public class GenerativeCity extends PApplet {
         text(frameRate, 50, 50);
     }
 
-    private void changeGrid(CellState newState) {
+    private void changeGrid(int newState) {
 
         int intensity = currentInteraction.frames;
 
@@ -245,7 +245,7 @@ public class GenerativeCity extends PApplet {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", GenerativeCity.class.getName() });
     }
 }

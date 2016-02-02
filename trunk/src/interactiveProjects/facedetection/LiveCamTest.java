@@ -44,7 +44,7 @@ public class LiveCamTest extends PApplet {
         c.read();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", LiveCamTest.class.getName() });
     }
 

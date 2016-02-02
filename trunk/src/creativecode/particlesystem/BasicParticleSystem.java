@@ -26,7 +26,7 @@ public class BasicParticleSystem extends PApplet {
         particleSystem2.addParticle();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { BasicParticleSystem.class.getName() });
     }
 }

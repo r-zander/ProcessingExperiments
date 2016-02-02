@@ -206,7 +206,7 @@ public class GlobeVisualization extends PApplet {
         endShape();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", GlobeVisualization.class.getName() });
     }
 }

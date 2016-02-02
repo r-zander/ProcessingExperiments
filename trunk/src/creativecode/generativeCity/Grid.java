@@ -144,11 +144,11 @@ public class Grid {
         return cellGrid[getGridX(x)][getGridY(y)];
     }
 
-    boolean isState(int gridX, int gridY, CellState state) {
+    boolean isState(int gridX, int gridY, int state) {
         return state == cellGrid[gridX][gridY].state;
     }
 
-    void changeState(int gridX, int gridY, CellState newState) {
+    void changeState(int gridX, int gridY, int newState) {
         float x = getX(gridX);
         float y = getY(gridY);
 
@@ -158,12 +158,12 @@ public class Grid {
         }
 
         switch (newState) {
-            case BUILT:
+            case CellState.BUILT:
                 cell.building = new Building(x, y, cellDimension, cellDimension, $.buildPadding);
                 currentBlock.add(cell);
                 pathFinderGraph.removeNode(cell.id());
                 break;
-            case EMPTY:
+            case CellState.EMPTY:
                 // TODO re-add the graph node with all edges
                 break;
             default:

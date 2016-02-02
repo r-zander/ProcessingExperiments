@@ -16,13 +16,20 @@ public class WhitneyChromatic extends PApplet {
 
     }
 
-    private static enum Mode {
-        BALLS,
-        LINES,
-        BALLS_AND_LINES;
+    /**
+     * Enum
+     */
+    private static class Mode {
+
+        // @formatter:off
+        public static final int
+            BALLS = 0,
+            LINES = 1,
+            BALLS_AND_LINES = 2;
+        // @formatter:on
     }
 
-    private static final Mode    MODE                = Mode.BALLS;
+    private static final int     MODE                = Mode.LINES;
 
     private static final int     NUMBER_OF_ELEMENTS  = 36;
 
@@ -36,12 +43,12 @@ public class WhitneyChromatic extends PApplet {
 
     private static final int     BACKGROUND_COLOR    = 0;
 
-    private static final boolean RERENDER_BACKGROUND = true;
+    private static final boolean RERENDER_BACKGROUND = false;
 
     /**
      * In seconds.
      */
-    private static final int     FULL_DURATION       = 120;
+    private static final int     FULL_DURATION       = 60;
 
     private float                centerX;
 
@@ -102,13 +109,13 @@ public class WhitneyChromatic extends PApplet {
             float angle = 2 * PI / FULL_DURATION * (counter / 60f) * balls[ballIndex].speed;
 
             switch (MODE) {
-                case BALLS:
+                case Mode.BALLS:
                     drawBall(balls[ballIndex], angle);
                     break;
-                case LINES:
+                case Mode.LINES:
                     drawLine(balls[ballIndex], angle);
                     break;
-                case BALLS_AND_LINES:
+                case Mode.BALLS_AND_LINES:
                     drawBall(balls[ballIndex], angle);
                     drawLine(balls[ballIndex], angle);
                     break;
@@ -138,7 +145,7 @@ public class WhitneyChromatic extends PApplet {
         return minValue + (maxValue - minValue) / NUMBER_OF_ELEMENTS * ballIndex;
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", WhitneyChromatic.class.getName() });
     }
 }

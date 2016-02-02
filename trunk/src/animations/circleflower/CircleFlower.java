@@ -4,7 +4,7 @@ import processing.core.PApplet;
 
 public class CircleFlower extends PApplet {
 
-    final static int   NUMBER_OF_CIRCLES              = 8;
+    final static int   NUMBER_OF_CIRCLES              = 3;
 
     final static float RELATIVE_CIRCLE_WIDTH          = 0.9f;
 
@@ -99,7 +99,7 @@ public class CircleFlower extends PApplet {
         text(frameRate, 50, 50);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", CircleFlower.class.getName() });
     }
 }

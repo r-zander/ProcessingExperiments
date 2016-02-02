@@ -15,7 +15,7 @@ public class MalevichRobot extends MalevichBasic {
         super.setup();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", MalevichRobot.class.getName() });
     }
 }

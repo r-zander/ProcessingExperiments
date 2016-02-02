@@ -69,7 +69,7 @@ public class BasicParticleSystemPunktiert3D extends PApplet {
 
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { BasicParticleSystemPunktiert3D.class.getName() });
     }
 }

@@ -46,7 +46,7 @@ public class Mondrian extends PApplet {
         // NOP
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         PApplet.main(new String[] { "--present", Mondrian.class.getName() });
     }
 }
