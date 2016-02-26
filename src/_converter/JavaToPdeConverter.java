@@ -1,4 +1,4 @@
-package pdeConverter;
+package _converter;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,7 +23,9 @@ public class JavaToPdeConverter {
      * Set to <code>null</code> to output the converted files in the folder of the java file.
      */
 //    private File       outputFolder   = new File("D:/xampp/htdocs/processingjs");
-    private File       outputFolder       = new File("D:/xampp/htdocs/portfolio-draft/pde/orbitclock");
+    private File       outputFolder       =
+                                                  new File(
+                                                          "D:/xampp/htdocs/portfolio-draft/pde/orbitclock");
 
 //    private File       outputFolder   = new File("D:/xampp/htdocs/processingjs/circleFlower");
 
@@ -35,7 +37,8 @@ public class JavaToPdeConverter {
 
     public JavaToPdeConverter(File sourceDirectory) throws IOException {
         if (outputFolder == null) {
-            throw new UnsupportedOperationException("Irgendwie muss dann noch ein Unterordner angelegt werden.");
+            throw new UnsupportedOperationException(
+                    "Irgendwie muss dann noch ein Unterordner angelegt werden.");
         }
         if (sourceDirectory.exists() == false) {
             throw new RuntimeException("src directory not found");
@@ -58,49 +61,72 @@ public class JavaToPdeConverter {
         }
     }
 
-    private static final Pattern IGNORE_CLASS_PATTERN     = Pattern.compile("\\@IgnoreClass");
+    private static final Pattern IGNORE_CLASS_PATTERN     =
+                                                                  Pattern.compile("\\@IgnoreClass");
 
-    private static final Pattern SKETCH_CLASS_PATTERN     = Pattern.compile("public class .+ extends PApplet \\{");
+    private static final Pattern SKETCH_CLASS_PATTERN     =
+                                                                  Pattern.compile("public class .+ extends PApplet \\{");
 
     private static final Pattern ENUM_PATTERN             = Pattern.compile("(^| )enum ");
 
-    private static final Pattern CLASS_PATTERN            = Pattern.compile("(^| )(class|interface) ");
+    private static final Pattern CLASS_PATTERN            =
+                                                                  Pattern.compile("(^| )(class|interface) ");
 
     private static final Pattern END_CLASS_PATTERN        = Pattern.compile("^\\}");
 
-    private static final Pattern SKIPPED_LINES_PATTERN    = Pattern.compile("(^//|" + "\\@Override|"
-                                                                  + "\\@SuppressWarnings|" + "\\@formatter:off|"
-                                                                  + "\\@formatter:on)");
+    private static final Pattern SKIPPED_LINES_PATTERN    =
+                                                                  Pattern.compile("(^//|"
+                                                                          + "\\@Override|"
+                                                                          + "\\@SuppressWarnings|"
+                                                                          + "\\@formatter:off|"
+                                                                          + "\\@formatter:on)");
 
-    private static final Pattern IGNORED_LINES_PATTERN    = Pattern.compile("\\@Ignore( (\\d+))?");
+    private static final Pattern IGNORED_LINES_PATTERN    =
+                                                                  Pattern.compile("\\@Ignore( (\\d+))?");
 
-    private static final Pattern SIZE_PATTERN             = Pattern.compile("size\\(.+\\);");
+    private static final Pattern SIZE_PATTERN             =
+                                                                  Pattern.compile("size\\(.+\\);");
 
-    private static final Pattern SYSTEM_MILLIS_PATTERN    = Pattern.compile(
-                                                                  "System.currentTimeMillis()",
+    private static final Pattern SYSTEM_MILLIS_PATTERN    =
+                                                                  Pattern.compile(
+                                                                          "System.currentTimeMillis()",
+                                                                          Pattern.LITERAL);
+
+    private static final Pattern SOP_PATTERN              = Pattern.compile(
+                                                                  "System.out.println(",
                                                                   Pattern.LITERAL);
 
-    private static final Pattern SOP_PATTERN              = Pattern.compile("System.out.println(", Pattern.LITERAL);
-
-    private static final Pattern STRING_FORMAT_PATTERN    = Pattern.compile("String.format(", Pattern.LITERAL);
-
-    private static final Pattern NUMBERS_PATTERN          = Pattern.compile("( \\d*\\.?\\d+)(f|L)");
-
-    private static final Pattern MAIN_METHOD_PATTERN      = Pattern.compile(
-                                                                  "public static void main(String[] args)",
+    private static final Pattern STRING_FORMAT_PATTERN    = Pattern.compile(
+                                                                  "String.format(",
                                                                   Pattern.LITERAL);
 
-    private static final Pattern END_MAIN_METHOD_PATTERN  = Pattern.compile("(    |\t)\\}");
+    private static final Pattern NUMBERS_PATTERN          =
+                                                                  Pattern.compile("( \\d*\\.?\\d+)(f|L)");
+
+    private static final Pattern MAIN_METHOD_PATTERN      =
+                                                                  Pattern.compile(
+                                                                          "public static void main(String[] args)",
+                                                                          Pattern.LITERAL);
+
+    private static final Pattern END_MAIN_METHOD_PATTERN  =
+                                                                  Pattern.compile("(    |\t)\\}");
 
     private static final Pattern END_METHOD_PATTERN       = Pattern.compile("^\\}");
 
-    private static final Pattern IMPORT_PATTERN           = Pattern.compile("import ([^;]+);");
+    private static final Pattern IMPORT_PATTERN           =
+                                                                  Pattern.compile("import ([^;]+);");
 
-    private static final Pattern SETUP_METHOD_PATTERN     = Pattern.compile("void setup()", Pattern.LITERAL);
+    private static final Pattern SETUP_METHOD_PATTERN     = Pattern.compile(
+                                                                  "void setup()",
+                                                                  Pattern.LITERAL);
 
-    private static final Pattern SMOOTHING_PATTERN        = Pattern.compile("(no)?[sS]mooth\\(\\);");
+    private static final Pattern SMOOTHING_PATTERN        =
+                                                                  Pattern.compile("(no)?[sS]mooth\\(\\);");
 
-    private static final Pattern COMMENTS_TO_KEEP_PATTERN = Pattern.compile("^(\\/\\*\\*|" + " \\* |" + " \\*\\/)");
+    private static final Pattern COMMENTS_TO_KEEP_PATTERN = Pattern
+                                                                  .compile("^(\\/\\*\\*|"
+                                                                          + " \\* |"
+                                                                          + " \\*\\/)");
 
     private static enum ParsingState {
         BEFORE_CLASS,
@@ -121,6 +147,7 @@ public class JavaToPdeConverter {
              * The complete parsing (including the patterns) assume formatted code.
              */
             ParsingState state = ParsingState.BEFORE_CLASS;
+            SketchFile sketchFile = null;
             BufferedWriter writer = null;
             Queue<String> imports = new LinkedList<String>();
             String line;
@@ -181,9 +208,11 @@ public class JavaToPdeConverter {
                          * 1st: make sure it's actually a processing sketch
                          */
                         if (matchesLine(SKETCH_CLASS_PATTERN, line)) {
-                            writer = newPdeFileWriter(javaFile);
-                            convertedFiles.add(javaFile);
+                            sketchFile = new SketchFile(outputFolder, javaFile);
+                            writer = newPdeFileWriter(sketchFile);
+                            convertedFiles.add(sketchFile);
                             writeHeadComment(writer, null);
+                            writeDirectives(writer);
                             state = ParsingState.START_OF_SKETCH;
                         }
                         break;
@@ -201,7 +230,9 @@ public class JavaToPdeConverter {
                             /*
                              * Inject call to preSetup() as first method of setup().
                              */
-                            writeln(writer, "    if (typeof preSetup == 'function') { preSetup(); }");
+                            writeln(
+                                    writer,
+                                    "    if (typeof preSetup == 'function') { preSetup(); }");
                             break;
                         }
 
@@ -276,16 +307,20 @@ public class JavaToPdeConverter {
                 });
                 String sketchPath = javaFile.getPath();
                 String sketchPackage =
-                        sketchPath.substring("src/".length(), sketchPath.lastIndexOf(File.separatorChar) + 1);
+                        sketchPath.substring(
+                                "src/".length(),
+                                sketchPath.lastIndexOf(File.separatorChar) + 1);
                 for (String fileName : javaFiles) {
                     imports.add(sketchPackage + fileName);
                 }
 
-                List<String> importedFiles = handleImports(imports);
+                Set<String> importedFiles = handleImports(imports);
 
                 if (!skipHtmlGeneration) {
-                    createHtmlFile(javaFile, importedFiles);
+                    createHtmlFile(sketchFile, importedFiles);
                 }
+
+                ZipFileCreator.createZip(sketchFile, importedFiles);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -328,10 +363,10 @@ public class JavaToPdeConverter {
         return line;
     }
 
-    private List<String> handleImports(Queue<String> imports) {
+    private Set<String> handleImports(Queue<String> imports) {
         Set<String> handledImports = new HashSet<String>();
 
-        ArrayList<String> importedFiles = new ArrayList<String>();
+        Set<String> importedFiles = new HashSet<String>();
         while (!imports.isEmpty()) {
             String importClass = imports.remove();
             handledImports.add(importClass);
@@ -343,6 +378,7 @@ public class JavaToPdeConverter {
             } else {
                 importFile = new File("src/" + importClass.replace(".", "/") + ".java");
             }
+            handledImports.add(importClass);
             if (importFile.exists()) {
                 BufferedReader br = null;
                 try {
@@ -399,7 +435,8 @@ public class JavaToPdeConverter {
                                 if (matcher.find()) {
 
                                     String newImport = matcher.group(1);
-                                    if (!imports.contains(newImport) && handledImports.contains(newImport)) {
+                                    if (!imports.contains(newImport)
+                                            && handledImports.contains(newImport)) {
                                         imports.add(newImport);
                                     }
                                 }
@@ -434,7 +471,7 @@ public class JavaToPdeConverter {
                                  * It's a class
                                  */
                                 if (matchesLine(CLASS_PATTERN, line)) {
-                                    writer = newFileWriter(importFile, "java");
+                                    writer = newFileWriter(importFile);
                                     writeHeadComment(writer, beforeClassComments);
                                     writeln(writer, line);
                                     state = ParsingState.INSIDE_CLASS;
@@ -470,6 +507,7 @@ public class JavaToPdeConverter {
                     }
                     if (writer != null) {
                         writer.close();
+                        importedFiles.add(importFile.getName());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -483,7 +521,6 @@ public class JavaToPdeConverter {
                     }
                 }
 
-                importedFiles.add(importFile.getName());
             }
         }
 
@@ -500,7 +537,12 @@ public class JavaToPdeConverter {
 
 //    private static final Format DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 
-    private static void writeHeadComment(BufferedWriter writer, List<String> beforeClassComments) throws IOException {
+    private static void writeDirectives(BufferedWriter writer) throws IOException {
+        writeln(writer, "/* @pjs pauseOnBlur=\"true\"; */");
+    }
+
+    private static void writeHeadComment(BufferedWriter writer,
+            List<String> beforeClassComments) throws IOException {
 //        writeln(writer, "/*");
 //        writeln(writer, " * Generated at " + DATE_FORMAT.format(new Date()));
 //        writeln(writer, " */");
@@ -511,37 +553,57 @@ public class JavaToPdeConverter {
         }
     }
 
-    private BufferedWriter newFileWriter(File javaFile, String fileEnding) throws IOException {
-        String absolutePath = javaFile.getAbsolutePath();
+    private BufferedWriter newFileWriter(SketchFile sketchFile, String fileEnding)
+            throws IOException {
+        String absolutePath;
 
-        if (outputFolder != null) {
-            absolutePath = outputFolder.getAbsolutePath() + File.separator + javaFile.getName();
+        if (outputFolder == null) {
+            absolutePath = sketchFile.getParent();
+        } else {
+            absolutePath = outputFolder.getAbsolutePath();
         }
 
-        absolutePath = absolutePath.substring(0, absolutePath.length() - 5) + "." + fileEnding;
+        absolutePath += File.separator + sketchFile.getSketchName() + "." + fileEnding;
         BufferedWriter writer = new BufferedWriter(new FileWriter(absolutePath));
         return writer;
     }
 
-    private BufferedWriter newPdeFileWriter(File javaFile) throws IOException {
-        return newFileWriter(javaFile, "pde");
+    private BufferedWriter newFileWriter(File file) throws IOException {
+        String absolutePath;
+
+        if (outputFolder == null) {
+            throw new IllegalStateException(file + " würde überschrieben werden.");
+        } else {
+            absolutePath =
+                    outputFolder.getAbsolutePath() + File.separator + file.getName();
+        }
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(absolutePath));
+        return writer;
     }
 
-    private void createHtmlFile(File javaFile, List<String> importedFiles) throws IOException {
-        BufferedWriter writer = newFileWriter(javaFile, "html");
+    private BufferedWriter newPdeFileWriter(SketchFile sketchFile) throws IOException {
+        return newFileWriter(sketchFile, SketchFile.FILE_ENDING);
+    }
+
+    private void createHtmlFile(SketchFile sketchFile, Set<String> importedFiles)
+            throws IOException {
+        BufferedWriter writer = newFileWriter(sketchFile, "html");
 
         BufferedReader htmlTemplate =
-                new BufferedReader(new InputStreamReader(
-                        JavaToPdeConverter.class.getResourceAsStream("ProcessingJsTemplate.html"),
-                        "UTF-8"));
+                new BufferedReader(
+                        new InputStreamReader(
+                                JavaToPdeConverter.class
+                                        .getResourceAsStream("ProcessingJsTemplate.html"),
+                                "UTF-8"));
         try {
             String line;
             while ((line = htmlTemplate.readLine()) != null) {
-                String name = javaFile.getName();
 
                 StringBuilder builder = new StringBuilder();
-                builder.append(name.substring(0, name.length() - 5));
-                builder.append(".pde");
+                builder.append(sketchFile.getSketchName());
+                builder.append(".");
+                builder.append(SketchFile.FILE_ENDING);
 
                 for (String importedFile : importedFiles) {
                     builder.append(" ");
@@ -576,8 +638,8 @@ public class JavaToPdeConverter {
     }
 
     private void outputStatistic() {
-        System.out.println("Found " + foundJavaFiles + " JAVA files, the following " + convertedFiles.size()
-                + " files were converted to PDE:");
+        System.out.println("Found " + foundJavaFiles + " JAVA files, the following "
+                + convertedFiles.size() + " files were converted to PDE:");
         for (File file : convertedFiles) {
             System.out.println(file);
         }

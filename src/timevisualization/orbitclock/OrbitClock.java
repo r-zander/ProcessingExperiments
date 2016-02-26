@@ -1,14 +1,19 @@
 package timevisualization.orbitclock;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import processing.core.PApplet;
-import timevisualization.orbitclock.TimeShape.MillisShape;
-import timevisualization.orbitclock.TimeShape.MinutesShape;
-import timevisualization.orbitclock.TimeShape.SecondsShape;
+import processing.core.PFont;
+import util.FontUtil;
 // @Ignore
 import util.Gradient;
 import util.Gradient.Axis;
 import util.TwoDimensional;
 import util.structures.Point;
+import _converter.RecordingUtil;
+import _converter.RecordingUtil.RecordingArguments;
+import _converter.RecordingUtil.RecordingListener;
 
 public class OrbitClock extends PApplet {
 
@@ -17,6 +22,7 @@ public class OrbitClock extends PApplet {
      */
     public static OrbitClock $;
 
+    // @Ignore
     private static final int COLOR_MODE = ColorMode.BLACK_ALPHA;
 
     private static final int STEPS      = 240;
@@ -42,7 +48,43 @@ public class OrbitClock extends PApplet {
 
     @Override
     public void setup() {
-        size(displayWidth, displayHeight);
+//        size(displayWidth, displayHeight);
+        RecordingUtil.setupRecording(new RecordingArguments(
+                this,
+                displayWidth,
+                displayHeight).framesRecorded(RecordingUtil.FPS * 60).listener(
+                new RecordingListener() {
+
+                    PFont            font;
+
+                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
+
+                    @Override
+                    public void onSetupRecording(PApplet $) {
+                        font = createFont("Orbitron Light.otf", 20, true);
+                    }
+
+                    @Override
+                    public void onBeforeFrameRecording(PApplet $) {
+                        fill(0, 192);
+                        noStroke();
+                        int rectHeight = 2 * 16 + 26;
+                        int rectWidth = 2 * 32 + 195;
+                        int rectX = 16;
+                        int rectY = height - 16 - rectHeight;
+                        rect(rectX, rectY, rectWidth, rectHeight);
+
+                        fill(255);
+                        textFont(font);
+                        textAlign(CENTER, CENTER);
+                        FontUtil.monospace(
+                                $,
+                                format.format(new Date()),
+                                17,
+                                rectX + 32,
+                                rectY + rectHeight / 2);
+                    }
+                }));
         noSmooth();
 
         $ = this;
@@ -59,19 +101,19 @@ public class OrbitClock extends PApplet {
 
         strokeCap(SQUARE);
 
-        minutesShape = new MinutesShape();
+        minutesShape = new TimeShape.Minutes();
         minutesShape.radius = width * .05f;
         minutesShape.steps = 60;
         minutesShape.width = 10;
         minutesShape.mode = OrbMode.ORBIT;
 
-        secondsShape = new SecondsShape();
+        secondsShape = new TimeShape.Seconds();
         secondsShape.radius = minutesShape.radius * .5f;
         secondsShape.steps = 60;
         secondsShape.width = minutesShape.width * .2f;
         secondsShape.mode = OrbMode.ORBIT;
 
-        millisShape = new MillisShape();
+        millisShape = new TimeShape.Millis();
         millisShape.radius = secondsShape.radius * .4f;
         millisShape.steps = 100;
         millisShape.width = secondsShape.width * .5f;
@@ -86,6 +128,7 @@ public class OrbitClock extends PApplet {
     }
 
     private void drawBackground() {
+        // @Ignore 11
         switch (COLOR_MODE) {
             case ColorMode.RANDOM:
                 for (int i = 0; i <= 0 + width; i++) {
@@ -98,24 +141,32 @@ public class OrbitClock extends PApplet {
             case ColorMode.BLACK_ALPHA:
             case ColorMode.BLACK_WHITE:
                 background(0, 0);
-
-                // @Ignore 4
+                // @Ignore 13
                 if (gradient == null) {
-                    gradient = new Gradient(this, 0, 0, width, height, YELLOW, BLUE, Axis.X_AXIS);
+                    gradient =
+                            new Gradient(
+                                    this,
+                                    0,
+                                    0,
+                                    width,
+                                    height,
+                                    YELLOW,
+                                    BLUE,
+                                    Axis.X_AXIS);
                 }
                 gradient.draw();
 
-                noFill();
-                stroke(0);
+//                noFill();
+//                stroke(0);
+                // @Ignore 7
                 break;
             case ColorMode.YELLOW_BLUE:
                 background(255);
                 noFill();
                 stroke(0);
                 break;
-
         }
-        strokeWeight(3);
+//        strokeWeight(3);
 //        Shapes.sun(this, centerX - 0.3f * width, centerY, width * .1f);
 //        Shapes.moon(this, centerX + 0.3f * width, centerY, width * .05f);
     }
@@ -123,6 +174,7 @@ public class OrbitClock extends PApplet {
     private void drawLemniscate() {
         noSmooth();
         float angle;
+        // @Ignore 5
         switch (COLOR_MODE) {
             case ColorMode.YELLOW_BLUE:
                 angle = PI;
@@ -130,6 +182,7 @@ public class OrbitClock extends PApplet {
             default:
                 angle = hour2angle(hour(), minute());
 
+                // @Ignore
         }
         Point startPoint = curveFunction.calculate(angle);
         float startX = centerX + startPoint.x;
@@ -146,19 +199,11 @@ public class OrbitClock extends PApplet {
             float x = centerX + point.x;
             float y = centerY + point.y;
 
-            float angleBetween = TwoDimensional.angleBetween(lastX, lastY, x, y) + HALF_PI;
+            float angleBetween =
+                    TwoDimensional.angleBetween(lastX, lastY, x, y) + HALF_PI;
             noStroke();
 
-            switch (COLOR_MODE) {
-//                case YELLOW_BLUE:
-//                    float halfSteps = steps / 2f;
-//                    if (currentStep > halfSteps) {
-//                        currentStep = steps - currentStep;
-//                    }
-//                    fill(lerpColor(YELLOW, BLUE, currentStep / halfSteps));
-                default:
-                    setFill(currentStep, STEPS);
-            }
+            setFill(currentStep, STEPS);
 
             int lineWidth = 30;
             float distX = cos(angleBetween) * lineWidth;
@@ -180,6 +225,7 @@ public class OrbitClock extends PApplet {
             lastX = x;
             lastY = y;
         }
+        // @Ignore 10
         switch (COLOR_MODE) {
             case ColorMode.YELLOW_BLUE:
                 angle = hour2angle(hour(), minute());
@@ -202,6 +248,7 @@ public class OrbitClock extends PApplet {
     }
 
     void setStroke(float currentStep, float steps) {
+        // @Ignore 9
         switch (COLOR_MODE) {
             case ColorMode.RANDOM:
                 stroke(color(random(255), random(255), random(255)));
@@ -212,11 +259,13 @@ public class OrbitClock extends PApplet {
             case ColorMode.YELLOW_BLUE:
             case ColorMode.BLACK_ALPHA:
                 stroke(0, 255 * (1 - currentStep / steps));
+                // @Ignore 2
                 break;
         }
     }
 
     void setFill(float currentStep, float steps) {
+        // @Ignore 9
         switch (COLOR_MODE) {
             case ColorMode.RANDOM:
                 fill(color(random(255), random(255), random(255)));
@@ -227,20 +276,21 @@ public class OrbitClock extends PApplet {
             case ColorMode.BLACK_ALPHA:
             default:
                 fill(0, 255 * (1 - currentStep / steps));
+                // @Ignore 2
                 break;
         }
     }
 
     private void drawMinutes(float x, float y) {
         minutesShape.draw(x, y);
-        drawSeconds(x + cos(minutesShape.getStartAngle()) * minutesShape.radius, y + sin(minutesShape.getStartAngle())
-                * minutesShape.radius);
+        drawSeconds(x + cos(minutesShape.getStartAngle()) * minutesShape.radius, y
+                + sin(minutesShape.getStartAngle()) * minutesShape.radius);
     }
 
     private void drawSeconds(float x, float y) {
         secondsShape.draw(x, y);
-        drawMillis(x + cos(secondsShape.getStartAngle()) * secondsShape.radius, y + sin(secondsShape.getStartAngle())
-                * secondsShape.radius);
+        drawMillis(x + cos(secondsShape.getStartAngle()) * secondsShape.radius, y
+                + sin(secondsShape.getStartAngle()) * secondsShape.radius);
     }
 
     private void drawMillis(float x, float y) {

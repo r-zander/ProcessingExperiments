@@ -1,8 +1,11 @@
 package timevisualization.orbitclock;
 
+import _converter.IgnoreClass;
+
 /**
  * Enum
  */
+@IgnoreClass
 class ColorMode {
 
     // @formatter:off
