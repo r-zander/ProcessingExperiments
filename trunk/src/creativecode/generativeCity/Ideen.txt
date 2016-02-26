@@ -1,6 +1,0 @@
-- aus jedem Haus kommt ein Auto
-- Autos mit Punktiert oÄ enhancen
-- zuerst kreisen Autos um ihren Start
-- sobald es andere Haus-Zentren in der Nähe gibt, bilden sich Straßen zwischen den Zentren
-
-- Alternative eingabe Möglichkeit: Geometrische Figuren mit der Maus zeichnen

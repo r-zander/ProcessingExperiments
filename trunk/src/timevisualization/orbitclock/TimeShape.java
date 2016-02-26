@@ -6,7 +6,7 @@ import static timevisualization.orbitclock.OrbitClock.*;
 
 abstract class TimeShape {
 
-    public static class MinutesShape extends TimeShape {
+    public static class Minutes extends TimeShape {
 
         @Override
         protected float getStartAngle() {
@@ -14,7 +14,7 @@ abstract class TimeShape {
         }
     }
 
-    public static class SecondsShape extends TimeShape {
+    public static class Seconds extends TimeShape {
 
         @Override
         protected float getStartAngle() {
@@ -22,7 +22,7 @@ abstract class TimeShape {
         }
     }
 
-    public static class MillisShape extends TimeShape {
+    public static class Millis extends TimeShape {
 
         @Override
         protected float getStartAngle() {
@@ -40,16 +40,12 @@ abstract class TimeShape {
 
     public void draw(float x, float y) {
         float startAngle = getStartAngle();
-        float angleSteps = OrbitClock.TWO_PI / steps;
+        float angleSteps = TWO_PI / steps;
         switch (mode) {
             case OrbMode.ORB:
                 $.setFill(steps, steps);
                 $.noStroke();
-                $.ellipse(
-                        x + OrbitClock.cos(startAngle) * radius,
-                        y + OrbitClock.sin(startAngle) * radius,
-                        10 * width,
-                        10 * width);
+                $.ellipse(x + cos(startAngle) * radius, y + sin(startAngle) * radius, 10 * width, 10 * width);
                 break;
             case OrbMode.ORBIT:
                 $.noFill();
