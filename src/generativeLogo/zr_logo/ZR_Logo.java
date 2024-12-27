@@ -7,13 +7,15 @@ import processing.core.PApplet;
 
 public class ZR_Logo extends PApplet {
 
+    static final int   BG_COLOR                  = 0xFF1C1C1C;
+
     static final float STROKE_WEIGHT             = 10;
 
     static final float STROKE_WEIGHT_CONSTRUCTED = 2;
 
     private int        frameCounter              = 0;
 
-    private int        finishFrame;
+    private int        finishFrame = 0;
 
     static final int   DEFAULT_FRAME_COUNT       = 120;
 
@@ -41,12 +43,12 @@ public class ZR_Logo extends PApplet {
         public static float maxY;
     }
 
-    private List<Element> elements = new ArrayList<Element>();
+    private final List<Element> elements = new ArrayList<>();
 
     @Override
     public void setup() {
-        size(600, 600);
-        background(255);
+        size(1000, 1000);
+        background(BG_COLOR);
 
         centerX = width / 2f;
         centerY = height / 2f;
@@ -57,36 +59,40 @@ public class ZR_Logo extends PApplet {
         Icon.minY = centerY - Icon.height / 2;
         Icon.maxY = centerY + Icon.height / 2;
 
-        elements.add(new CompoundElement(Line.ofCoordinates(this, 0, 0, centerX, centerY), Line.ofCoordinates(
-                this,
-                width,
-                0,
-                centerX,
-                centerY), Line.ofCoordinates(this, width, height, centerX, centerY), Line.ofCoordinates(
-                this,
-                0,
-                height,
-                centerX,
-                centerY)).persistent(false));
+        elements.add(
+                new CompoundElement(
+                        Line.ofCoordinates(this, 0, 0, centerX, centerY),
+                        Line.ofCoordinates(this, width, 0, centerX, centerY),
+                        Line.ofCoordinates(this, width, height, centerX, centerY),
+                        Line.ofCoordinates(this,0,height,centerX,centerY)
+                ).persistent(false));
 
         elements.add(Line.ofCoordinates(this, centerX, centerY, centerX, Icon.minY).persistent(false));
 
+        // Diagonal line of Z
         final Line line1 = Line.ofCoordinates(this, Icon.minX, Icon.maxY, centerX, Icon.minY);
 
         elements.add(Line.ofVector(this, line1.length, 0, line1.endX, line1.endY).persistent(false));
 
         elements.add(new ConstructionArc(
-                Line.ofCoordinates(this, line1.endX, line1.endY, line1.startX, line1.startY),
+                Line.reverseOf(line1),
                 0));
         elements.add(line1);
 
-        Line line3 = Line.ofCoordinates(this, line1.endX, line1.endY, line1.endX, line1.startY);
-        elements.add(new ConstructionArc(line3, line1.angle));
-        elements.add(line3);
 
-        Line line2 = Line.ofCoordinates(this, line1.startX, line1.startY, line1.endX, line1.startY);
-        elements.add(new ConstructionArc(line2, line1.angle - PI));
-        elements.add(line2);
+        // Vertical line of R
+        Line line3 = Line.ofCoordinates(this, line1.endX, line1.startY, line1.endX, line1.endY );
+        elements.add(Line.ofVector(this, line3.length, line1.angle, line1.endX, line1.endY).persistent(false));
+        elements.add(new ConstructionArc(Line.reverseOf(line3), line1.angle));
+
+        // Bottom line of Z
+        Line line2 = Line.ofCoordinates(this, line1.endX, line1.startY, line1.startX, line1.startY);
+        elements.add(
+                new CompoundElement(
+                        line3,
+                        line2
+                )
+        );
 
         elements.add(new ConstructionArc(Line.ofVector(this, line1.length / 2, PI, line3.endX, line3.endY), line3.angle
                 + PI));
@@ -108,6 +114,7 @@ public class ZR_Logo extends PApplet {
         for (Element element : elements) {
             finishFrame += element.frameCount;
         }
+
         finishFrame += 300;
     }
 
@@ -116,9 +123,10 @@ public class ZR_Logo extends PApplet {
 //        fill(255, 15);
 //        noStroke();
 //        rect(0, 0, width, height);
-        background(255);
+        background(BG_COLOR);
 
         strokeWeight(STROKE_WEIGHT);
+//        strokeCap(PROJECT);
         noFill();
         int relativeFrameCount = frameCounter;
         for (Element element : elements) {
@@ -137,14 +145,21 @@ public class ZR_Logo extends PApplet {
         }
         if (frameCounter >= finishFrame) {
             frameCounter = 0;
-            background(255);
+            background(BG_COLOR);
         }
-        if (!mousePressed) {
+
+        if (mousePressed) {
+            if (mouseButton == RIGHT) {
+                frameCounter--;
+            }
+        } else {
             frameCounter++;
         }
     }
 
     public static void main(String[] args) {
-        PApplet.main(new String[] { "--present", ZR_Logo.class.getName() });
+        PApplet.main(new String[] {
+//                "--present",
+                ZR_Logo.class.getName() });
     }
 }

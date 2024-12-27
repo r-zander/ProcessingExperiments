@@ -47,7 +47,7 @@ public abstract class Element {
     }
 
     public DrawAttributes newPersistentDrawAttributes() {
-        return new DrawAttributes(ZR_Logo.STROKE_WEIGHT, 0f);
+        return new DrawAttributes(ZR_Logo.STROKE_WEIGHT, 0xFF00BEFC);
     }
 
     public DrawAttributes newConstructedDrawAttributes() {

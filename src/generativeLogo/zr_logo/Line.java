@@ -41,6 +41,10 @@ public class Line extends Element {
                 endY) - ZR_Logo.PI, startX, startY, endX, endY);
     }
 
+    public static Line reverseOf(Line line) {
+        return Line.ofCoordinates(line.parent, line.endX, line.endY, line.startX, line.startY);
+    }
+
     @Override
     public void drawShape(float percentage) {
         parent.line(startX, startY, startX + (endX - startX) * percentage, startY + (endY - startY) * percentage);
