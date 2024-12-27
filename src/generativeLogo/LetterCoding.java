@@ -12,9 +12,9 @@ public class LetterCoding extends PApplet {
 
     int                    fgColor    = 0xFF000000;
 
-    final int              gridHeight = 400;
+    final int              gridHeight = 1000;
 
-    final int              gridWidth  = 400;
+    final int              gridWidth  = 1000;
 
     int                    color;
 
@@ -175,6 +175,9 @@ public class LetterCoding extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(new String[] { "--present", LetterCoding.class.getName() });
+        PApplet.main(new String[] {
+//                "--present",
+                LetterCoding.class.getName()
+        });
     }
 }

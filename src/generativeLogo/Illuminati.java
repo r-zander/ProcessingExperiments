@@ -93,6 +93,9 @@ public class Illuminati extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main(new String[] { "--present", Illuminati.class.getName() });
+        PApplet.main(new String[] {
+//                "--present",
+                Illuminati.class.getName()
+        });
     }
 }
