@@ -9,9 +9,9 @@ public class ZR_Logo extends PApplet {
 
     static final int   BG_COLOR                  = 0xFF1C1C1C;
 
-    static final float STROKE_WEIGHT             = 10;
+    static final float STROKE_WEIGHT             = 20;
 
-    static final float STROKE_WEIGHT_CONSTRUCTED = 2;
+    static final float STROKE_WEIGHT_CONSTRUCTED = 1;
 
     private int        frameCounter              = 0;
 
